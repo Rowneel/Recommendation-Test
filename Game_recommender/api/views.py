@@ -6,6 +6,7 @@ from django.contrib.staticfiles import finders
 # from api.serializers import GameSerializer,RecommendationSerializer
 import numpy as np
 import pandas as pd
+from django.contrib.auth.models import User,auth
 
 
 def reduce_memory(df):
@@ -102,3 +103,31 @@ def getData(request):
     games_list = top_games_df.to_dict(orient='records')
     return Response(games_list)
 
+@api_view(['POST'])
+def login(request):
+    username = request.data.get("username")
+    password = request.data.get('password')
+    user = auth.authenticate(username=username, password=password)    
+    if user is not None:
+        auth.login(request, user)
+        response =  Response({"message": "User logged in successfully"})
+        print(response.data)
+        return response
+    
+@api_view(['POST'])
+def register(request):
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+    first_name = request.data.get('first_name')
+    last_name = request.data.get('last_name')
+    user = User.objects.create_user(username=username, email=email, password=password,first_name = first_name, last_name= last_name)
+    user.save()
+    response =  Response({"message": "User created successfully"})
+    print(response.data)
+    return response
+
+@api_view(['GET'])
+def logout(request):
+    auth.logout(request)
+    return Response({"message": "User logged out successfully"})
