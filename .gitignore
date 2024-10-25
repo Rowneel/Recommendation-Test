@@ -15,3 +15,6 @@ recommendations_large.csv
 users.csv
 
 tempCodeRunnerFile.py
+cosine_sim_matrix.npz
+similarity_desc.pkl
+similarity_forDesc.pkl
