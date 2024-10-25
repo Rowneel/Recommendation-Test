@@ -1,6 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.staticfiles import finders
+from django.db import IntegrityError
+
+from rest_framework import status
 # from api.models import Game,Recommendation
 # from . import models
 # from api.serializers import GameSerializer,RecommendationSerializer
@@ -103,31 +106,48 @@ def getData(request):
     games_list = top_games_df.to_dict(orient='records')
     return Response(games_list)
 
-@api_view(['POST'])
-def login(request):
-    username = request.data.get("username")
-    password = request.data.get('password')
-    user = auth.authenticate(username=username, password=password)    
-    if user is not None:
-        auth.login(request, user)
-        response =  Response({"message": "User logged in successfully"})
-        print(response.data)
-        return response
+# @api_view(['POST'])
+# def login(request):
+#     username = request.data.get("username")
+#     password = request.data.get('password')
+#     user = auth.authenticate(username=username, password=password)    
+#     if user is not None:
+#         auth.login(request, user)
+#         response =  Response({"message": "User logged in successfully"})
+#         print(response.data)
+#         return response
     
 @api_view(['POST'])
 def register(request):
-    username = request.data.get('username')
-    email = request.data.get('email')
-    password = request.data.get('password')
-    first_name = request.data.get('first_name')
-    last_name = request.data.get('last_name')
-    user = User.objects.create_user(username=username, email=email, password=password,first_name = first_name, last_name= last_name)
-    user.save()
-    response =  Response({"message": "User created successfully"})
-    print(response.data)
-    return response
+    username = request.data.get('username', "")
+    email = request.data.get('email', "")
+    password = request.data.get('password', "")
+    first_name = request.data.get('first_name', "")
+    last_name = request.data.get('last_name', "")
 
-@api_view(['GET'])
-def logout(request):
-    auth.logout(request)
-    return Response({"message": "User logged out successfully"})
+    # Basic validation
+    if not username or not email or not password:
+        return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if the username or email already exists
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "The username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=email).exists():
+        return Response({"error": "The email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        user = User.objects.create_user(username=username, email=email, password=password,first_name = first_name, last_name= last_name)
+        user.save()
+        response =  Response({"message": "User created successfully"})
+        print(response.data)
+        return response
+    except IntegrityError:
+        return Response({"error": "Failed to create user. Please try again."}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # More appropriate for unexpected errors
+
+# @api_view(['GET'])
+# def logout(request):
+#     auth.logout(request)
+#     return Response({"message": "User logged out successfully"})

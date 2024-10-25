@@ -12,9 +12,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
+from django.conf import settings
+# from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+ # Load SECRET_KEY from .env
 
 
 # Quick-start development settings - unsuitable for production
@@ -40,6 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'rest_framework_simplejwt',
 
     
 ]
@@ -55,6 +63,31 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Game_recommender.urls'
+
+# SECRET_KEY = config('SECRET_KEY') 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    )
+}
+# djangorestframework-simplejwt
+SIMPLE_JWT = {
+    'SIGNING_KEY': os.getenv('SECRET_KEY', settings.SECRET_KEY),
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
+# dj-rest-auth
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "_auth",  # Name of access token cookie
+    "JWT_AUTH_REFRESH_COOKIE": "_refresh", # Name of refresh token cookie
+    "JWT_AUTH_HTTPONLY": True,  # Makes sure refresh token is sent
+    # "JWT_AUTH_REFRESH_HTTPONLY": False,  # Refresh token can be accessed (optional)
+}
+
 
 TEMPLATES = [
     {

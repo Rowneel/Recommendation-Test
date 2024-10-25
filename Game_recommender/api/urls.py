@@ -5,11 +5,11 @@ from . import views
 
 urlpatterns = [
     path('',views.getData),
-    path('login',views.login),
+    # path('login',views.login),
     
     path('register',views.register),
 
-    path('logout',views.logout),
+    # path('logout',views.logout),
 
     
 ]
