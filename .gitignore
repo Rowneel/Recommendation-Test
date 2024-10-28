@@ -7,7 +7,7 @@ env.bak/
 venv.bak/
 .spyderproject
 .ropeproject
-
+*/.ipynb_checkpoints/*
 
 games.csv
 recommendations.csv
