@@ -15,6 +15,11 @@ recommendations.csv
 recommendations_large.csv
 users.csv
 
+tempCodeRunnerFile.py
+cosine_sim_matrix.npz
+similarity_desc.pkl
+similarity_forDesc.pkl
+
 games_metadata.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/react,node
