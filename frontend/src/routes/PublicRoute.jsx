@@ -5,7 +5,6 @@ import useAuth from "../hooks/useAuth";
 
 function PublicRoute() {
   const { token, loading } = useAuth();
-  console.log(token);
 
   if (loading) return <div>Loading...</div>;
 
