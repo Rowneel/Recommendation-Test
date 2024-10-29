@@ -86,7 +86,14 @@ REST_AUTH = {
     "JWT_AUTH_REFRESH_COOKIE": "_refresh", # Name of refresh token cookie
     "JWT_AUTH_HTTPONLY": True,  # Makes sure refresh token is sent
     # "JWT_AUTH_REFRESH_HTTPONLY": False,  # Refresh token can be accessed (optional)
+    
 }
+# Secure Cookie Settings
+JWT_AUTH_COOKIE_SECURE = True  # Only sent over HTTPS
+JWT_AUTH_COOKIE_HTTPONLY = True  # Prevents JavaScript access to access token cookie
+JWT_AUTH_REFRESH_COOKIE_SECURE = True  # Refresh token cookie only sent over HTTPS
+JWT_AUTH_REFRESH_COOKIE_HTTPONLY = True  # Prevents JavaScript access to refresh token cookie
+JWT_AUTH_COOKIE_USE_CSRF = True  # Enables CSRF protection for added security
 
 
 TEMPLATES = [
