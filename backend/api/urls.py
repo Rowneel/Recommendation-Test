@@ -9,6 +9,7 @@ urlpatterns = [
     
     path('register',views.register,name="register"),
     path('test',views.test,name="test"),
+    path('app_details/<str:app_id>',views.app_details_view,name="app_details")
 
     # path('logout',views.logout),
 

@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.staticfiles import finders
 from django.db import IntegrityError
+import requests
+from django.http import JsonResponse
 
 from rest_framework import status
 # from api.models import Game,Recommendation
@@ -158,3 +160,20 @@ def register(request):
 @permission_classes([IsAuthenticated])
 def test(request):
     return Response({"message": "You are authenticated"})
+
+
+@api_view(['GET'])
+def app_details_view(request, app_id):
+    steam_api_url = f'https://store.steampowered.com/api/appdetails?appids={app_id}'
+    
+    try:
+        response = requests.get(steam_api_url)
+        response_data = response.json()
+
+        if response_data[str(app_id)]['success']:
+            return JsonResponse(response_data[str(app_id)]['data'], status=200)
+        else:
+            return JsonResponse({"error": "App not found"}, status=404)
+
+    except requests.RequestException as e:
+        return JsonResponse({"error": str(e)}, status=500)
