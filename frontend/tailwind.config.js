@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       boxShadow: {
-        selected: "0 0 5px 3px rgba(0, 0, 0, 0.1)",
+        selected: "0 0 5px -2px rgba(0, 0, 0, 0.1)",
       },
     },
   },

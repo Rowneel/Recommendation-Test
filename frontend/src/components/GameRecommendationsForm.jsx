@@ -24,25 +24,9 @@ const GameRecommendationForm = () => {
 
   return (
     <div className="sm:p-4 p-2 max-w-lg mx-auto">
-      {/* Search Bar */}
-      <div className="flex items-center mb-6 h-10">
-        <input
-          type="text"
-          placeholder="Search for games..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-grow h-full p-2 text-lg border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-        <button
-          onClick={handleSearch}
-          className="h-full px-5 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 flex items-center justify-center"
-        >
-          <FaSearch />
-        </button>
-      </div>
-
       {/* Recommendation Method Cards */}
-      <div className="flex gap-2">
+      {/* <span className="block text-xl text-center w-full mb-2">Select Recommendation Method:</span> */}
+      <div className="flex gap-2 mb-4">
       <MethodCard
         method="title"
         selectedMethod={selectedMethod}
@@ -61,6 +45,23 @@ const GameRecommendationForm = () => {
         handleMethodSelect={handleMethodSelect}
         icon={MdOutlineStar}
       />
+      </div>
+
+      {/* Search Bar */}
+      <div className="flex items-center mb-3 h-10">
+        <input
+          type="text"
+          placeholder="Search for games..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-grow h-full p-2 text-lg border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+        <button
+          onClick={handleSearch}
+          className="h-full px-5 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 flex items-center justify-center"
+        >
+          <FaSearch />
+        </button>
       </div>
     </div>
   );
