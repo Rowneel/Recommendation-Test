@@ -29,7 +29,7 @@ const GameRecommendations = () => {
   );
 
   return (
-    <div className="flex flex-col sm:mx-10 mx-0 dark:text-text">
+    <div className="flex flex-col sm:mx-10 mx-0 dark:text-white">
       {/* Sidebar toggle button for small devices */}
 
       <span

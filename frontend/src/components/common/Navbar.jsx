@@ -64,20 +64,20 @@ function Navbar() {
               </button>
 
               <ul className="absolute right-0 bg-gray-800 border-2 border-primary rounded-lg shadow-lg z-50 invisible group-hover:visible">
-                <li className="hover:bg-accent rounded-t-lg">
+                <li className="hover:bg-accent rounded-t-lg hover:text-text">
                   <Link to={`/${user}`} className="block px-4 py-2">
                     My Profile
                   </Link>
                 </li>
                 <li className="hover:bg-accent">
-                  <Link to="/settings/profile" className="block px-4 py-2">
+                  <Link to="/settings/profile" className="block px-4 py-2 hover:text-text">
                     Settings
                   </Link>
                 </li>
                 <li>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 hover:bg-accent rounded-b-lg"
+                    className="block w-full text-left px-4 py-2 hover:bg-accent hover:text-text rounded-b-lg"
                   >
                     Logout
                   </button>

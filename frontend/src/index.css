@@ -6,15 +6,15 @@
   /* Default (Retro) Theme */
   --background: #000000; /* black */
   --primary: #ffd700; /* gold */
-  --accent: #ff1493; /* deep pink */
-  --text: #e0e0e0; /* light gray */
+  --accent: #FF52AE; /* deep pink */
+  --text: #000000; /* light gray */
 }
 
 [data-theme="cyberpunk"] {
   --background: #1a1a1a; /* very dark gray */
-  --primary: #ff0080; /* magenta */
+  --primary: #FF57AB; /* magenta */
   --accent: #00ffea; /* cyan */
-  --text: #ffffff; /* white */
+  --text: #000000; /* white */
 
 }
 
