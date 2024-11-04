@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* Default (Retro) Theme */
+  --background: #000000; /* black */
+  --primary: #ffd700; /* gold */
+  --accent: #ff1493; /* deep pink */
+  --text: #e0e0e0; /* light gray */
+}
+
+[data-theme="cyberpunk"] {
+  --background: #1a1a1a; /* very dark gray */
+  --primary: #ff0080; /* magenta */
+  --accent: #00ffea; /* cyan */
+  --text: #ffffff; /* white */
+
+}
+
+*{
+    box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+}

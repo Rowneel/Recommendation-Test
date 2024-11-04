@@ -8,9 +8,11 @@ function HomePage() {
   return (
     <div>
       <Navbar />
-      <h1 className="text-3xl text-center">Welcome to our Home Page</h1>
-      <GameRecommendationsForm/>
-      <GameRecommendations/>
+      <div className="flex flex-col justify-center items-center dark:text-white">
+        <h1 className="text-center sm:text-6xl text-3xl text-primary sm:my-10 my-5">Your Next Favorite Game Awaits!</h1>
+        <GameRecommendationsForm/>
+      </div>
+      <GameRecommendations />
     </div>
   );
 }

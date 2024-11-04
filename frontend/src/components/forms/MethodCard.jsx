@@ -4,10 +4,10 @@ const MethodCard = ({ method, selectedMethod, handleMethodSelect, icon: Icon }) 
   return (
     <div
       onClick={() => handleMethodSelect(method)}
-      className={`flex-1 p-2 text-center rounded-lg cursor-pointer ${
+      className={`flex-1 p-2 text-center rounded-lg cursor-pointer hover:text-accent ${
         selectedMethod === method
-          ? "shadow-selected shadow-green-800"
-          : "border border-gray-100"
+          ? "shadow-selected shadow-accent border-2 border-accent"
+          : "border-2 border-primary"
       }`}
     >
       <h3 className="font-semibold flex items-center justify-center">

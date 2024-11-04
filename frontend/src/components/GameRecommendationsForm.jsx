@@ -23,42 +23,43 @@ const GameRecommendationForm = () => {
   };
 
   return (
-    <div className="sm:p-4 p-2 max-w-lg mx-auto">
+    <div className="p-2 w-full max-w-[512px]">
       {/* Recommendation Method Cards */}
       {/* <span className="block text-xl text-center w-full mb-2">Select Recommendation Method:</span> */}
       <div className="flex gap-2 mb-4">
-      <MethodCard
-        method="title"
-        selectedMethod={selectedMethod}
-        handleMethodSelect={handleMethodSelect}
-        icon={IoGameController}
-      />
-      <MethodCard
-        method="description"
-        selectedMethod={selectedMethod}
-        handleMethodSelect={handleMethodSelect}
-        icon={MdOutlineDescription}
-      />
-      <MethodCard
-        method="rating"
-        selectedMethod={selectedMethod}
-        handleMethodSelect={handleMethodSelect}
-        icon={MdOutlineStar}
-      />
+        <MethodCard
+          method="title"
+          selectedMethod={selectedMethod}
+          handleMethodSelect={handleMethodSelect}
+          icon={IoGameController}
+        />
+        <MethodCard
+          method="description"
+          selectedMethod={selectedMethod}
+          handleMethodSelect={handleMethodSelect}
+          icon={MdOutlineDescription}
+        />
+        <MethodCard
+          method="rating"
+          hidden:visible
+          selectedMethod={selectedMethod}
+          handleMethodSelect={handleMethodSelect}
+          icon={MdOutlineStar}
+        />
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center mb-3 h-10">
+      <div className="flex items-center h-10">
         <input
           type="text"
           placeholder="Search for games..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-grow h-full p-2 text-lg border border-gray-300 rounded-l-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="flex-grow h-full p-2 text-lg border bg-gray-800 border-primary rounded-l-md focus:outline-none focus:ring-1 focus:ring-accent"
         />
         <button
           onClick={handleSearch}
-          className="h-full px-5 bg-blue-500 text-white rounded-r-md hover:bg-blue-600 flex items-center justify-center"
+          className="h-full px-5 bg-primary text-black rounded-r-md hover:bg-accent flex items-center justify-center "
         >
           <FaSearch />
         </button>

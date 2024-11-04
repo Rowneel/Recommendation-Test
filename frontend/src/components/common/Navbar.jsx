@@ -43,7 +43,7 @@ function Navbar() {
   };
 
   return (
-    <nav className=" sticky top-0 flex justify-between items-center h-16 sm:px-16 px-8 bg-purple-200">
+    <nav className=" sticky top-0 flex justify-between items-center h-16 sm:px-16 px-8 bg-background z-20 dark:text-white">
       <div className="relative w-full lg:w-auto flex justify-between">
         <div className="pr-5 text-3xl">App Name</div>
         <button className="lg:hidden" onClick={toggleMenu}>
@@ -52,24 +52,24 @@ function Navbar() {
         </button>
       </div>
       <div className="hidden lg:block">
-        <ul className="flex gap-8 whitespace-nowrap items-center">
-          <li>
+        <ul className="flex gap-8 whitespace-nowrap items-center ">
+          <li className="hover:text-accent">
             <Link to={"/"}>Home</Link>
           </li>
-          <li>About Us</li>
+          <li className="hover:text-accent">About Us</li>
           {token ? (
             <div className="relative group">
-              <button className="bg-white text-black p-3 rounded-full hover:opacity-50">
+              <button className="bg-gray-800 border-2 border-primary text-black p-3 rounded-full hover:opacity-50">
                 <img src="/vite.svg" width={20} height={20} alt="" />
               </button>
 
-              <ul className="absolute right-0 bg-white border border-gray-300 rounded-lg shadow-lg z-50 invisible group-hover:visible">
-                <li className="hover:bg-gray-100 rounded-t-lg">
+              <ul className="absolute right-0 bg-gray-800 border-2 border-primary rounded-lg shadow-lg z-50 invisible group-hover:visible">
+                <li className="hover:bg-accent rounded-t-lg">
                   <Link to={`/${user}`} className="block px-4 py-2">
                     My Profile
                   </Link>
                 </li>
-                <li className="hover:bg-gray-100">
+                <li className="hover:bg-accent">
                   <Link to="/settings/profile" className="block px-4 py-2">
                     Settings
                   </Link>
@@ -77,7 +77,7 @@ function Navbar() {
                 <li>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 rounded-b-lg"
+                    className="block w-full text-left px-4 py-2 hover:bg-accent rounded-b-lg"
                   >
                     Logout
                   </button>

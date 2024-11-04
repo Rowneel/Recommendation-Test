@@ -1,8 +1,10 @@
 import React from 'react'
+import ThemeSwitcher from './ThemeSwitcher'
 
 function EditProfile() {
   return (
-    <div>EditProfile</div>
+    <div>EditProfile<ThemeSwitcher/></div>
+    
   )
 }
 

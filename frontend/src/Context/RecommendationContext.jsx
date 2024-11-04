@@ -34,30 +34,35 @@ export const RecommendationProvider = ({ children }) => {
           header_image: "/vite.svg",
           name: "dota",
           short_description: "short_description",
+          genre:"action"
         },
         {
           steam_appid: 33,
           header_image: "/vite.svg",
           name: "dota2",
           short_description: "short_description2",
+          genre:"action"
         },
         {
           steam_appid: 33,
           header_image: "/vite.svg",
           name: "dota2",
           short_description: "short_description2",
+          genre:"rpg"
         },
         {
           steam_appid: 33,
           header_image: "/vite.svg",
           name: "dota2",
           short_description: "short_description2",
+          genre:"sports"
         },
         {
           steam_appid: 33,
           header_image: "/vite.svg",
           name: "dota2",
           short_description: "short_description2",
+          genre:"moba"
         },
       ]);
       //   const promises = gameIds.map(async (id) => {

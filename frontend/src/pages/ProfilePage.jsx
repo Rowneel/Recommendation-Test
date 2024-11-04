@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 function ProfilePage() {
   return (
-    <div>
+    <div className="dark:text-white">
       ProfilePage
       <Outlet/>
     </div>
