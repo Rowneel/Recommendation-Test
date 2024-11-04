@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { FaSearch } from "react-icons/fa";
+import { MdOutlineDescription, MdOutlineStar } from "react-icons/md";
+import { IoGameController } from "react-icons/io5";
 import useRecommendation from "../hooks/useRecommendation";
+import MethodCard from "./forms/MethodCard";
 
 const GameRecommendationForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,7 +23,7 @@ const GameRecommendationForm = () => {
   };
 
   return (
-    <div className="sm:p-8 p-2 max-w-lg mx-auto">
+    <div className="sm:p-4 p-2 max-w-lg mx-auto">
       {/* Search Bar */}
       <div className="flex items-center mb-6 h-10">
         <input
@@ -39,37 +42,25 @@ const GameRecommendationForm = () => {
       </div>
 
       {/* Recommendation Method Cards */}
-      <div className="flex gap-4 h-32">
-        <div
-          onClick={() => handleMethodSelect("title")}
-          className={`flex-1 p-4  text-center rounded-lg cursor-pointer ${
-            selectedMethod === "title"
-              ? " shadow-selected shadow-green-800"
-              : "border border-gray-100"
-          }`}
-        >
-          <h3 className="font-semibold">By Title</h3>
-        </div>
-        <div
-          onClick={() => handleMethodSelect("description")}
-          className={`flex-1 p-4 text-center rounded-lg cursor-pointer ${
-            selectedMethod === "description"
-              ? " shadow-selected shadow-green-800"
-              : "border border-gray-100"
-          }`}
-        >
-          <h3 className="font-semibold">By Description</h3>
-        </div>
-        <div
-          onClick={() => handleMethodSelect("rating")}
-          className={`flex-1 p-4 text-center rounded-lg cursor-pointer ${
-            selectedMethod === "rating"
-              ? " shadow-selected shadow-green-800"
-              : "border border-gray-100"
-          }`}
-        >
-          <h3 className="font-semibold">By Rating</h3>
-        </div>
+      <div className="flex gap-2">
+      <MethodCard
+        method="title"
+        selectedMethod={selectedMethod}
+        handleMethodSelect={handleMethodSelect}
+        icon={IoGameController}
+      />
+      <MethodCard
+        method="description"
+        selectedMethod={selectedMethod}
+        handleMethodSelect={handleMethodSelect}
+        icon={MdOutlineDescription}
+      />
+      <MethodCard
+        method="rating"
+        selectedMethod={selectedMethod}
+        handleMethodSelect={handleMethodSelect}
+        icon={MdOutlineStar}
+      />
       </div>
     </div>
   );
