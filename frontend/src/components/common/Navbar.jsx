@@ -99,40 +99,40 @@ function Navbar() {
 
       <div
         ref={menuRef}
-        className={`absolute top-16 left-0 w-full bg-white text-black transform transition-transform duration-300 ${
+        className={`absolute top-16 left-0 w-full  dark:bg-background dark:text-white text-black transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:hidden`}
       >
         <ul
-          className="flex whitespace-nowrap flex-col items-center"
+          className="flex whitespace-nowrap flex-col items-center font-extrabold"
           onClick={handleMenuClick}
         >
           <li className="w-full text-center">
-            <Link to={"/"} className="block w-full  py-4  hover:bg-purple-200 hover:transform border-t-[2px] hover:border-purple-300 border-purple-100">Home</Link>
+            <Link to={"/"} className="block w-full  py-4  hover:bg-accent hover:text-text hover:transform border-t-[2px] hover:border-accent border-accent">Home</Link>
           </li>
           <li className="w-full text-center">
-            <Link to={"/about-us"} className="block w-full  py-4  hover:bg-purple-200 ">About Us</Link>
+            <Link to={"/about-us"} className="block w-full  py-4  hover:bg-accent hover:text-text">About Us</Link>
           </li>
           {token ? (
             <>
               <li className="w-full text-center">
-                <Link to={`/${user}`} className="block w-full  py-4  hover:bg-purple-200 ">My Profile</Link>
+                <Link to={`/${user}`} className="block w-full  py-4  hover:bg-accent hover:text-text">My Profile</Link>
               </li>
 
               <li className="w-full text-center">
-                <Link to="/settings/profile" className="block w-full  py-4  hover:bg-purple-200 ">Settings</Link>
+                <Link to="/settings/profile" className="block w-full  py-4  hover:bg-accent hover:text-text">Settings</Link>
               </li>
               <li className="w-full text-center">
-                <button onClick={handleLogout} className="block w-full  py-4  hover:bg-purple-200 ">Logout</button>
+                <button onClick={handleLogout} className="block w-full  py-4  hover:bg-accent hover:text-text">Logout</button>
               </li>
             </>
           ) : (
             <>
               <li className="w-full text-center">
-                <Link to="/login" className="block w-full  py-4  hover:bg-purple-200 ">Login</Link>
+                <Link to="/login" className="block w-full  py-4  hover:bg-accent hover:text-text">Login</Link>
               </li>
               <li className="w-full text-center">
-                <Link to="/signup" className="block w-full  py-4  hover:bg-purple-200 ">Signup</Link>
+                <Link to="/signup" className="block w-full  py-4  hover:bg-accent hover:text-text">Signup</Link>
               </li>
             </>
           )}

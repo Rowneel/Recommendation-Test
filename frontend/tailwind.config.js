@@ -7,10 +7,13 @@ export default {
         selected: "0 0 5px 2px rgba(0, 0, 0, 0.1)",
       },
       colors: {
-        background: 'var(--background)',
-        primary: 'var(--primary)',
-        accent: 'var(--accent)',
-        text: 'var(--text)',
+        background: "var(--background)",
+        primary: "var(--primary)",
+        accent: "var(--accent)",
+        text: "var(--text)",
+      },
+      fontFamily: {
+        'sans': ['Roboto','sans-serif'],
       },
     },
   },
