@@ -8,7 +8,7 @@ function HomePage() {
   return (
     <div>
       <Navbar />
-      <h1 className="text-3xl">Welcome to our Home Page</h1>
+      <h1 className="text-3xl text-center">Welcome to our Home Page</h1>
       <GameRecommendationsForm/>
       <GameRecommendations/>
     </div>

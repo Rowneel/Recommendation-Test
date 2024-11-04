@@ -43,7 +43,7 @@ function Navbar() {
   };
 
   return (
-    <nav className=" sticky top-0 flex justify-between items-center h-16 px-16 bg-purple-200">
+    <nav className=" sticky top-0 flex justify-between items-center h-16 sm:px-16 px-8 bg-purple-200">
       <div className="relative w-full lg:w-auto flex justify-between">
         <div className="pr-5 text-3xl">App Name</div>
         <button className="lg:hidden" onClick={toggleMenu}>

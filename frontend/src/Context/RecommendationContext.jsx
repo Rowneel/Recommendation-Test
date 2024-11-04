@@ -10,38 +10,73 @@ export const RecommendationProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchRecommendations = async (searchQuery, selectedMethod) =>{
+  const fetchRecommendations = async (searchQuery, selectedMethod) => {
     setLoading(true);
     setError(null);
     //call api get array of geameIds
-    console.log(searchQuery);
-    console.log(selectedMethod);
-    const gameIds = [570,1];
-    fetchGameDetails(gameIds);
+    try {
+      console.log(searchQuery);
+      console.log(selectedMethod);
+      const gameIds = [570, 1];
+      fetchGameDetails(gameIds);
+    } catch (e) {
+      console.log(e.message);
+    }
   };
 
   const fetchGameDetails = async (gameIds) => {
     setLoading(true);
     setError(null);
-
     try {
-      const promises = gameIds.map(async (id) => {
-        try {
-          const response = await apiFetchGamesDetails(id);
-          return response.status === 200 ? response.data : null;
-        } catch (error) {
-          if (error.status) {
-            setError((prevError) =>
-              prevError ? `${prevError}\nGame for id ${id} might be removed from steam` : `Game for id ${id} might be removed from steam`
-            );
-          }
+      setGames([
+        {
+          steam_appid: 23,
+          header_image: "/vite.svg",
+          name: "dota",
+          short_description: "short_description",
+        },
+        {
+          steam_appid: 33,
+          header_image: "/vite.svg",
+          name: "dota2",
+          short_description: "short_description2",
+        },
+        {
+          steam_appid: 33,
+          header_image: "/vite.svg",
+          name: "dota2",
+          short_description: "short_description2",
+        },
+        {
+          steam_appid: 33,
+          header_image: "/vite.svg",
+          name: "dota2",
+          short_description: "short_description2",
+        },
+        {
+          steam_appid: 33,
+          header_image: "/vite.svg",
+          name: "dota2",
+          short_description: "short_description2",
+        },
+      ]);
+      //   const promises = gameIds.map(async (id) => {
+      //     try {
+      //       const response = await apiFetchGamesDetails(id);
+      //       return response.status === 200 ? response.data : null;
+      //     } catch (error) {
+      //       if (error.status) {
+      //         setError((prevError) =>
+      //           prevError ? `${prevError}\nGame for id ${id} might be removed from steam` : `Game for id ${id} might be removed from steam`
+      //         );
+      //       }
 
-          return null;
-        }
-      });
+      //       return null;
+      //     }
+      //   });
 
-      const results = await Promise.all(promises);
-      setGames(results.filter((game) => game !== null));
+      //   const results = await Promise.all(promises);
+      //   setGames(results.filter((game) => game !== null));
     } catch (error) {
       console.error("Error fetching game details:", error);
       setError("Failed to fetch game details.");
@@ -73,7 +108,15 @@ export const RecommendationProvider = ({ children }) => {
 
   return (
     <RecommendationContext.Provider
-      value={{ games, game, loading, error, fetchGameDetails, fetchSingleGame, fetchRecommendations }}
+      value={{
+        games,
+        game,
+        loading,
+        error,
+        fetchGameDetails,
+        fetchSingleGame,
+        fetchRecommendations
+      }}
     >
       {children}
     </RecommendationContext.Provider>
