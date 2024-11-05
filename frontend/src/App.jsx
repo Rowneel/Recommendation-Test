@@ -9,10 +9,11 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import HomePage from "./pages/HomePage";
 import PrivateRoute from "./routes/PrivateRoute";
-import ProfilePage from "./pages/ProfilePage";
 import PublicProfilePage from "./pages/PublicProfilePage";
 import EditProfile from "./components/profile/EditProfile";
 import UpdateGamesForm from "./components/profile/UpdateGamesForm";
+import SettingsPage from "./pages/SettingsPage";
+import MiscellaneousSetting from "./components/profile/MiscellaneousSetting";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -27,10 +28,11 @@ function App() {
           <Route index element={<HomePage />} />
         </Route>
         <Route path="/settings" element={<PrivateRoute />}>
-          <Route element={<ProfilePage />}>
+          <Route element={<SettingsPage />}>
             <Route index element={<EditProfile />} />
             <Route path="profile" element={<EditProfile />} />
             <Route path="games" element={<UpdateGamesForm />} />
+            <Route path="misc" element={<MiscellaneousSetting />} />
           </Route>
         </Route>
       </Routes>

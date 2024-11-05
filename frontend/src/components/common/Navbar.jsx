@@ -43,9 +43,9 @@ function Navbar() {
   };
 
   return (
-    <nav className=" sticky top-0 flex justify-between items-center h-16 sm:px-16 px-8 bg-background z-20 dark:text-white">
+    <nav className=" sticky top-0 flex justify-between items-center h-20 sm:px-16 px-8 bg-background z-20 dark:text-white">
       <div className="relative w-full lg:w-auto flex justify-between">
-        <div className="pr-5 text-3xl">App Name</div>
+        <div className="pr-5 text-4xl"><Link to={"/"}>App Name</Link></div>
         <button className="lg:hidden" onClick={toggleMenu}>
           {/* Menu icon toggles between hamburger and close */}
           {isOpen ? <IoMdClose /> : <GiHamburgerMenu />}
@@ -53,10 +53,12 @@ function Navbar() {
       </div>
       <div className="hidden lg:block">
         <ul className="flex gap-8 whitespace-nowrap items-center ">
-          <li className="hover:text-accent">
-            <Link to={"/"}>Home</Link>
+          <li className="hover:text-accent font-bold text-xl">
+            <Link to={"/"}>HOME</Link>
           </li>
-          <li className="hover:text-accent">About Us</li>
+          <li className="hover:text-accent font-bold text-xl">
+            <Link to={"/about-us"}>ABOUT US</Link>
+          </li>
           {token ? (
             <div className="relative group">
               <button className="bg-gray-800 border-2 border-primary text-black p-3 rounded-full hover:opacity-50">

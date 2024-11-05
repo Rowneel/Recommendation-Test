@@ -6,8 +6,10 @@ import { RiCloseLargeLine } from "react-icons/ri";
 const GameRecommendations = () => {
   const { games, error, loading } = useRecommendation();
   const [selectedGenres, setSelectedGenres] = useState(new Set());
+  const [appliedGenres, setAppliedGenres] = useState(new Set()); // State to hold applied genres
   const isWindowWide = window.innerWidth > 1024;
   const [isSidebarOpen, setIsSidebarOpen] = useState(isWindowWide);
+  const [filterLoading, setFilterLoading] = useState(false);
 
   // Example genres
   const genres = ["action", "adventure", "strategy", "rpg", "sports"];
@@ -23,22 +25,28 @@ const GameRecommendations = () => {
     setSelectedGenres(newSelectedGenres);
   };
 
-  // Filter games based on selected genres
+  // Apply filters to update the filtered games
+  const applyFilters = () => {
+    setFilterLoading(true);
+    setAppliedGenres(new Set(selectedGenres)); // Update applied genres
+    setFilterLoading(false);
+  };
+
+  // Filter games based on applied genres
   const filteredGames = games.filter(
-    (game) => selectedGenres.size === 0 || selectedGenres.has(game.genre)
+    (game) => appliedGenres.size === 0 || appliedGenres.has(game.genre)
   );
 
   return (
     <div className="flex flex-col sm:mx-10 mx-0 dark:text-white">
       {/* Sidebar toggle button for small devices */}
-
       <span
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="p-4 w-32 mt-5 flex items-center font-bold text-xl cursor-pointer hover:text-accent " 
+        className="p-4 w-32 mt-5 flex items-center font-bold text-xl cursor-pointer hover:text-accent"
       >
         {isSidebarOpen ? (
           <>
-            <RiCloseLargeLine className="mr-2 " />
+            <RiCloseLargeLine className="mr-2" />
             Close
           </>
         ) : (
@@ -48,11 +56,11 @@ const GameRecommendations = () => {
           </>
         )}
       </span>
+      
       {/* Sidebar for genre selection */}
-
       <div className="flex relative">
         <div
-          className={`absolute top-0 w-1/2 sm:w-52 p-4 ml-4 bg-gray-800 sm:static sm:top-0 transform transition-transform duration-300 ${
+          className={`absolute top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 bg-gray-800 sm:static sm:top-0 transform transition-transform duration-300 ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full hidden"
           }`}
         >
@@ -72,7 +80,14 @@ const GameRecommendations = () => {
               </label>
             </div>
           ))}
+          <button
+            onClick={applyFilters}
+            className="mt-4 px-4 py-2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+          >
+            Apply Filters
+          </button>
         </div>
+
         {/* Main Content */}
         <div className={`flex-1 px-4`}>
           {error && (
@@ -86,14 +101,14 @@ const GameRecommendations = () => {
           {loading && <p>Loading...</p>}
           {!loading && filteredGames.length === 0 && <p>No games found.</p>}
           <div
-            className={`grid gap-5 grid-cols-1 sm:grid-cols-2  ${
+            className={`grid gap-5 grid-cols-1 sm:grid-cols-2 ${
               isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
             }`}
           >
             {filteredGames.map((game) => (
               <div
                 key={game.steam_appid}
-                className="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+                className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
               >
                 <a href="#">
                   <img

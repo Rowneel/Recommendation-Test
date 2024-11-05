@@ -3,7 +3,7 @@ import ThemeSwitcher from './ThemeSwitcher'
 
 function EditProfile() {
   return (
-    <div>EditProfile<ThemeSwitcher/></div>
+    <div>EditProfile</div>
     
   )
 }
