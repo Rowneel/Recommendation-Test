@@ -5,6 +5,9 @@ from django.contrib.staticfiles import finders
 from django.db import IntegrityError
 import requests
 from django.http import JsonResponse
+import pandas as pd
+import numpy as np
+import pickle
 
 from rest_framework import status
 # from api.models import Game,Recommendation
@@ -177,3 +180,22 @@ def app_details_view(request, app_id):
 
     except requests.RequestException as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
+
+
+@api_view(['GET'])
+def recommendation_by_description(request,game):
+    games_path = finders.find('src/final_games_data_forDesc.csv') 
+    games = reduce_memory(pd.read_csv(games_path))
+    n_recommendation = 20
+    similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
+    similarity=pickle.load(open(similarity_pickle_path,'rb'))
+
+    index = games[games['title'] == game].index[0]
+    sim_scores = sorted(list(enumerate(similarity[index])),reverse=True,key = lambda x: x[1])
+    game_lists=[]
+    for i in sim_scores[1:n_recommendation]:
+        game_lists.append(games.iloc[i[0]].title)
+    return Response(game_lists)
+
+# recommend('Call of Duty®: Black Ops Cold War')
