@@ -19,6 +19,7 @@ tempCodeRunnerFile.py
 cosine_sim_matrix.npz
 similarity_desc.pkl
 similarity_forDesc.pkl
+similarity_forTitle.pkl
 
 games_metadata.json
 

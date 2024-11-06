@@ -16,6 +16,8 @@ from rest_framework import status
 import numpy as np
 import pandas as pd
 from django.contrib.auth.models import User,auth
+from django.core.cache import cache
+
 
 
 def reduce_memory(df):
@@ -25,6 +27,15 @@ def reduce_memory(df):
         if df[col].dtype == 'int64':
             df[col] = df[col].astype('int32')
     return df
+
+
+def get_similarity_from_cache():
+    similarity = cache.get('similarity_matrix')
+    if similarity is None:
+        similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
+        similarity=pickle.load(open(similarity_pickle_path,'rb'))
+        cache.set('similarity_matrix', similarity, timeout=3600)  # Cache for 1 hour
+    return similarity
 
 #CODE WHILE USE DATABASE ISTEAD OF CSV
 
@@ -188,14 +199,12 @@ def recommendation_by_description(request,game):
     games_path = finders.find('src/final_games_data_forDesc.csv') 
     games = reduce_memory(pd.read_csv(games_path))
     n_recommendation = 20
-    similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
-    similarity=pickle.load(open(similarity_pickle_path,'rb'))
-
+    similarity = get_similarity_from_cache()
     index = games[games['title'] == game].index[0]
     sim_scores = sorted(list(enumerate(similarity[index])),reverse=True,key = lambda x: x[1])
     game_lists=[]
     for i in sim_scores[1:n_recommendation]:
-        game_lists.append(games.iloc[i[0]].title)
+        game_lists.append(games.iloc[i[0]].app_id)
     return Response(game_lists)
 
 # recommend('Call of Duty®: Black Ops Cold War')
