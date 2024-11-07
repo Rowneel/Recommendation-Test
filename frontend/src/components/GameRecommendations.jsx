@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useRecommendation from "../hooks/useRecommendation";
 import { FaFilter } from "react-icons/fa";
 import { RiCloseLargeLine } from "react-icons/ri";
+import { Link } from "react-router-dom";
 
 const GameRecommendations = () => {
   const { games, error, loading } = useRecommendation();
@@ -34,8 +35,32 @@ const GameRecommendations = () => {
 
   // Filter games based on applied genres
   const filteredGames = games.filter(
-    (game) => appliedGenres.size === 0 || appliedGenres.has(game.genre)
+    (game) =>
+      appliedGenres.size === 0 ||
+      game.genres.some((genre) =>
+        appliedGenres.has(genre.description.toLowerCase())
+      )
   );
+
+  // Function to display loading skeletons
+  const renderLoadingSkeletons = () => {
+    return (
+      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        {[...Array(8)].map((_, index) => (
+          <div
+            key={index}
+            className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 animate-pulse"
+          >
+            <div className="w-full h-48 bg-gray-300 dark:bg-gray-700 rounded-t-lg" />
+            <div className="p-5">
+              <div className="h-6 bg-gray-400 dark:bg-gray-600 mb-2 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-400 dark:bg-gray-600 mb-3 rounded w-1/2"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col sm:mx-10 mx-0 dark:text-white">
@@ -56,7 +81,7 @@ const GameRecommendations = () => {
           </>
         )}
       </span>
-      
+
       {/* Sidebar for genre selection */}
       <div className="flex relative">
         <div
@@ -98,36 +123,39 @@ const GameRecommendations = () => {
               <span className="font-medium">{error}</span>
             </div>
           )}
-          {loading && <p>Loading...</p>}
-          {!loading && filteredGames.length === 0 && <p>No games found.</p>}
+          {/* Show skeletons during loading */}
+          {loading || filterLoading ? renderLoadingSkeletons() : null}
+          {console.log(games.length)}
+          {!loading &&
+            !filterLoading &&
+            games.length === 0 &&
+            filteredGames.length === 0 && (
+              <p>No games found based on your filter criteria.</p>
+            )}
+
           <div
             className={`grid gap-5 grid-cols-1 sm:grid-cols-2 ${
               isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
             }`}
           >
             {filteredGames.map((game) => (
-              <div
-                key={game.steam_appid}
-                className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-              >
-                <a href="#">
+              <Link to={`/game/${game.steam_appid}`} key={game.steam_appid}>
+                <div className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                   <img
                     className="rounded-t-lg w-full h-48 object-cover"
                     src={game.header_image}
                     alt={game.name}
                   />
-                </a>
-                <div className="p-5">
-                  <a href="#">
+                  <div className="p-5">
                     <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                       {game.name}
                     </h5>
-                  </a>
-                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
-                    {game.short_description}
-                  </p>
+                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
+                      {game.short_description}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -14,28 +14,36 @@ import EditProfile from "./components/profile/EditProfile";
 import UpdateGamesForm from "./components/profile/UpdateGamesForm";
 import SettingsPage from "./pages/SettingsPage";
 import MiscellaneousSetting from "./components/profile/MiscellaneousSetting";
-
+import { AuthProvider } from "./Context/AuthContext.jsx";
+import { RecommendationProvider } from "./Context/RecommendationContext.jsx";
+import GameInfoPage from "./pages/GameInfoPage.jsx";
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<PublicRoute />}>
-          <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignupPage />} />
-          <Route path=":userId" element={<PublicProfilePage />} />
-          <Route index element={<HomePage />} />
-        </Route>
-        <Route path="/settings" element={<PrivateRoute />}>
-          <Route element={<SettingsPage />}>
-            <Route index element={<EditProfile />} />
-            <Route path="profile" element={<EditProfile />} />
-            <Route path="games" element={<UpdateGamesForm />} />
-            <Route path="misc" element={<MiscellaneousSetting />} />
-          </Route>
-        </Route>
-      </Routes>
+      <AuthProvider>
+        <RecommendationProvider>
+          <Routes>
+            <Route path="/" element={<PublicRoute />}>
+              <Route path="login" element={<LoginPage />} />
+              <Route path="signup" element={<SignupPage />} />
+              <Route path="/profile/:userId" element={<PublicProfilePage />} />
+              <Route path="game/:gameId" element={<GameInfoPage/>}/>
+              <Route index element={<HomePage />} />
+            </Route>
+
+            <Route path="/settings" element={<PrivateRoute />}>
+              <Route element={<SettingsPage />}>
+                <Route index element={<EditProfile />} />
+                <Route path="profile" element={<EditProfile />} />
+                <Route path="games" element={<UpdateGamesForm />} />
+                <Route path="misc" element={<MiscellaneousSetting />} />
+              </Route>
+            </Route>
+          </Routes>
+        </RecommendationProvider>
+      </AuthProvider>
     </Router>
   );
 }

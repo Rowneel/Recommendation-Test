@@ -4,12 +4,14 @@ import Navbar from "../components/common/Navbar";
 import useAuth from "../hooks/useAuth";
 
 function PrivateRoute() {
-  const { token, loading } = useAuth();
+  const { isAuthChecked, getUser, loading } = useAuth();
+  console.log(loading);
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="dark:text-white flex h-screen w-full justify-center items-center bg-background">Loading...</div>;
   }
 
-  return token ? (
+
+  return isAuthChecked && !loading ? (
     <>
       <Navbar />
       <Outlet />

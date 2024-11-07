@@ -5,10 +5,11 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 function Navbar() {
-    const {token,logout, user} = useAuth()
+  const { logout, isAuthChecked,user } = useAuth();
+  console.log(user);
   const [isOpen, SetIsOpen] = useState(false);
   const menuRef = useRef(null);
-  const navigte = useNavigate();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     SetIsOpen(!isOpen);
@@ -39,13 +40,15 @@ function Navbar() {
 
   const handleLogout = (event) => {
     logout();
-    Navigate('/');
+    navigate("/");
   };
 
   return (
     <nav className=" sticky top-0 flex justify-between items-center h-20 sm:px-16 px-8 bg-background z-20 dark:text-white">
       <div className="relative w-full lg:w-auto flex justify-between">
-        <div className="pr-5 text-4xl"><Link to={"/"}>App Name</Link></div>
+        <div className="pr-5 text-4xl">
+          <Link to={"/"}>App Name</Link>
+        </div>
         <button className="lg:hidden" onClick={toggleMenu}>
           {/* Menu icon toggles between hamburger and close */}
           {isOpen ? <IoMdClose /> : <GiHamburgerMenu />}
@@ -59,7 +62,7 @@ function Navbar() {
           <li className="hover:text-accent font-bold text-xl">
             <Link to={"/about-us"}>ABOUT US</Link>
           </li>
-          {token ? (
+          {isAuthChecked ? (
             <div className="relative group">
               <button className="bg-gray-800 border-2 border-primary text-black p-3 rounded-full hover:opacity-50">
                 <img src="/vite.svg" width={20} height={20} alt="" />
@@ -67,12 +70,15 @@ function Navbar() {
 
               <ul className="absolute right-0 bg-gray-800 border-2 border-primary rounded-lg shadow-lg z-50 invisible group-hover:visible">
                 <li className="hover:bg-accent rounded-t-lg hover:text-text">
-                  <Link to={`/${user}`} className="block px-4 py-2">
+                  <Link to={`/profile/${user?.pk}`} className="block px-4 py-2">
                     My Profile
                   </Link>
                 </li>
                 <li className="hover:bg-accent">
-                  <Link to="/settings/profile" className="block px-4 py-2 hover:text-text">
+                  <Link
+                    to="/settings/profile"
+                    className="block px-4 py-2 hover:text-text"
+                  >
                     Settings
                   </Link>
                 </li>
@@ -110,31 +116,66 @@ function Navbar() {
           onClick={handleMenuClick}
         >
           <li className="w-full text-center">
-            <Link to={"/"} className="block w-full  py-4  hover:bg-accent hover:text-text hover:transform border-t-[2px] hover:border-accent border-accent">Home</Link>
+            <Link
+              to={"/"}
+              className="block w-full  py-4  hover:bg-accent hover:text-text hover:transform border-t-[2px] hover:border-accent border-accent"
+            >
+              Home
+            </Link>
           </li>
           <li className="w-full text-center">
-            <Link to={"/about-us"} className="block w-full  py-4  hover:bg-accent hover:text-text">About Us</Link>
+            <Link
+              to={"/about-us"}
+              className="block w-full  py-4  hover:bg-accent hover:text-text"
+            >
+              About Us
+            </Link>
           </li>
-          {token ? (
+          {isAuthChecked ? (
             <>
               <li className="w-full text-center">
-                <Link to={`/${user}`} className="block w-full  py-4  hover:bg-accent hover:text-text">My Profile</Link>
+                <Link
+                  to={`/profile/${user?.pk}`}
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  My Profile
+                </Link>
               </li>
 
               <li className="w-full text-center">
-                <Link to="/settings/profile" className="block w-full  py-4  hover:bg-accent hover:text-text">Settings</Link>
+                <Link
+                  to="/settings/profile"
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  Settings
+                </Link>
               </li>
               <li className="w-full text-center">
-                <button onClick={handleLogout} className="block w-full  py-4  hover:bg-accent hover:text-text">Logout</button>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  Logout
+                </button>
               </li>
             </>
           ) : (
             <>
               <li className="w-full text-center">
-                <Link to="/login" className="block w-full  py-4  hover:bg-accent hover:text-text">Login</Link>
+                <Link
+                  to="/login"
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  Login
+                </Link>
               </li>
               <li className="w-full text-center">
-                <Link to="/signup" className="block w-full  py-4  hover:bg-accent hover:text-text">Signup</Link>
+                <Link
+                  to="/signup"
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  Signup
+                </Link>
               </li>
             </>
           )}
