@@ -11,7 +11,8 @@ import pickle
 
 from rest_framework import status
 # from api.models import Game,Recommendation
-# from . import models
+from api.models import UserLibrary
+from api.serializers import UserLibrarySerializer
 # from api.serializers import GameSerializer,RecommendationSerializer
 import numpy as np
 import pandas as pd
@@ -208,3 +209,30 @@ def recommendation_by_description(request,game):
     return Response(game_lists)
 
 # recommend('Call of Duty®: Black Ops Cold War')
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_UserLibrary(request):
+    user = request.user
+    library = UserLibrary.objects.filter(user=user)
+    if library.exists():
+        serializer = UserLibrarySerializer(library, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    return Response({"error": "User's library is empty."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def post_UserLibrary(request):
+    user = request.user
+    app_id = request.data.get("app_id")
+    if app_id:
+        # Check if this app_id is already in the user's library
+        if not UserLibrary.objects.filter(user=user, app_id=app_id).exists():
+            UserLibrary.objects.create(user=user, app_id=app_id)
+            return Response({"message": "Game added to library."}, status=status.HTTP_201_CREATED)
+        return Response({"error": "Game already in library."}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"error": "app_id is required."}, status=status.HTTP_400_BAD_REQUEST)

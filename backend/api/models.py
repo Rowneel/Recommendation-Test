@@ -20,3 +20,11 @@ from django.contrib.auth.models import User
 #         return f"User {self.user_id} - Game {self.app_id}"
 
 
+class UserLibrary(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="library")
+    app_id = models.CharField(max_length=255)
+    added_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        unique_together = ('user', 'app_id')
+
+
