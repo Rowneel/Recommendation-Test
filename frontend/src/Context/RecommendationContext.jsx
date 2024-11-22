@@ -1,12 +1,15 @@
 import React, { createContext, useState, useContext, useCallback } from "react";
 import axios from "axios";
-import { apiFetchGamesDetails } from "../services/recommendationService";
+import {
+  apiFetchGamesDetails,
+  apiFetchRecommendationsDesc,
+} from "../services/recommendationService";
 
 export const RecommendationContext = createContext();
 
 export const RecommendationProvider = ({ children }) => {
   const [games, setGames] = useState([]);
-  const [game, setGame] = useState(null); // State for a single game
+  const [game, setGame] = useState(null); // State for a single game may remove this
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,99 +20,49 @@ export const RecommendationProvider = ({ children }) => {
     try {
       console.log(searchQuery);
       console.log(selectedMethod);
-      const gameIds = [570, 1];
-      fetchGameDetails(gameIds);
+      let gameIds = [];
+      if (selectedMethod === "description") {
+        const res = await apiFetchRecommendationsDesc(searchQuery);
+        console.log(res);
+        gameIds = res.data;
+      }
+      await fetchGameDetails(gameIds);
     } catch (e) {
       console.log(e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchGameDetails = async (gameIds) => {
     setLoading(true);
     setError(null);
+    let failedIds = [];
     try {
-      setGames([
-        {
-          steam_appid: 23,
-          header_image: "/vite.svg",
-          name: "dota",
-          short_description: "short_description",
-          genre:"action"
-        },
-        {
-          steam_appid: 33,
-          header_image: "/vite.svg",
-          name: "dota2",
-          short_description: "short_description2",
-          genre:"action"
-        },
-        {
-          steam_appid: 33,
-          header_image: "/vite.svg",
-          name: "dota2",
-          short_description: "short_description2",
-          genre:"rpg"
-        },
-        {
-          steam_appid: 33,
-          header_image: "/vite.svg",
-          name: "dota2",
-          short_description: "short_description2",
-          genre:"sports"
-        },
-        {
-          steam_appid: 33,
-          header_image: "/vite.svg",
-          name: "dota2",
-          short_description: "short_description2",
-          genre:"moba"
-        },
-      ]);
-      //   const promises = gameIds.map(async (id) => {
-      //     try {
-      //       const response = await apiFetchGamesDetails(id);
-      //       return response.status === 200 ? response.data : null;
-      //     } catch (error) {
-      //       if (error.status) {
-      //         setError((prevError) =>
-      //           prevError ? `${prevError}\nGame for id ${id} might be removed from steam` : `Game for id ${id} might be removed from steam`
-      //         );
-      //       }
+      const promises = gameIds.map(async (id) => {
+        try {
+          const response = await apiFetchGamesDetails(id);
+          return response.status === 200 ? response.data : null;
+        } catch (error) {
+          failedIds.push(id);
+          return null;
+        }
+      });
 
-      //       return null;
-      //     }
-      //   });
-
-      //   const results = await Promise.all(promises);
-      //   setGames(results.filter((game) => game !== null));
-    } catch (error) {
-      console.error("Error fetching game details:", error);
-      setError("Failed to fetch game details.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Function to fetch a single game’s details
-  const fetchSingleGame = async (gameId) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/appdetails/${gameId}`
-      );
-      if (response.status === 200) {
-        setGame(response.data);
-      } else {
-        setError("Game not found.");
+      const results = await Promise.all(promises);
+      if (failedIds.length > 0) {
+        const idsMessage = failedIds.join(",");
+        const finalMessage = `Game(s) for id(s) ${idsMessage} might be removed from Steam`;
+        setError(finalMessage);
       }
+      setGames(results.filter((game) => game !== null));
     } catch (error) {
-      setError("Error fetching game details.");
-      console.error("Error fetching game details:", error);
+      setError("An error occurred while fetching game details.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <RecommendationContext.Provider
@@ -119,8 +72,7 @@ export const RecommendationProvider = ({ children }) => {
         loading,
         error,
         fetchGameDetails,
-        fetchSingleGame,
-        fetchRecommendations
+        fetchRecommendations,
       }}
     >
       {children}

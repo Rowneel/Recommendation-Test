@@ -8,14 +8,11 @@ import MethodCard from "./forms/MethodCard";
 const GameRecommendationForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMethod, setSelectedMethod] = useState("title");
-  const { fetchRecommendations } = useRecommendation();
+  const { fetchRecommendations, loading } = useRecommendation();
 
   const handleSearch = () => {
-    // console.log("Searching for:", searchQuery);
     // console.log("Selected Method:", selectedMethod);
-    // Add logic here to fetch recommendations based on searchQuery and selectedMethod
     fetchRecommendations(searchQuery, selectedMethod);
-    setSearchQuery("");
   };
 
   const handleMethodSelect = (method) => {
@@ -49,7 +46,8 @@ const GameRecommendationForm = () => {
       </div>
 
       {/* Search Bar */}
-      <div className="flex items-center h-10">
+      {loading && <div className="h-10 w-full text-center">Getting Recommendations...</div>}
+      {!loading && <div className="flex items-center h-10">
         <input
           type="text"
           placeholder="Search for games..."
@@ -63,7 +61,7 @@ const GameRecommendationForm = () => {
         >
           <FaSearch />
         </button>
-      </div>
+      </div>}
     </div>
   );
 };

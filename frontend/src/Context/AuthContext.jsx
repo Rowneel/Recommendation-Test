@@ -1,81 +1,117 @@
 import React, { createContext, useState, useEffect } from "react";
-
+import {
+  login as apiLogin,
+  register as apiRegister,
+  logout as apiLogout,
+  fetchUser as apiFetchUser,
+} from "../services/authService";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // Optional: to handle error messages
+  const [sessionError, setSessionError] = useState(null);
+
+  // Login user
+  const login = async (formData) => {
+    setLoading(true);
+    try {
+      const res = await apiLogin(formData);
+      setUser(res.data.user); // Set the user after successful login
+      localStorage.setItem("userStatus", true);
+      setIsAuthChecked(true);
+    } catch (error) {
+      setError(error.response?.data?.message || error.message);
+      console.error("Login failed", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Logout user
+  const logout = async () => {
+    setLoading(true);
+    try {
+      await apiLogout(); // Call logout API
+      setUser(null); // Reset user state after logout
+      localStorage.removeItem("userStatus"); // Remove user status from local storage
+      setIsAuthChecked(false);
+    } catch (error) {
+      setError(error.response?.data?.message || error.message);
+      console.error("Logout failed", error);
+    } finally {
+      setLoading(false); // Mark loading as complete
+    }
+  };
+
+  // Fetch user data (to keep session active)
+  const getUser = async () => {
+    setLoading(true);
+    try {
+      const res = await apiFetchUser(); // Call user API
+      if (res.data) {
+        console.log(res.data);
+        setUser(res.data);
+        localStorage.setItem("userStatus", true);
+        setIsAuthChecked(true);
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        // If 401 (Unauthorized), try refreshing the token
+
+        await refreshAccessToken();
+      } else {
+        setSessionError("Unable to authenticate");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshAccessToken = async () => {
+    try {
+      await apiRefreshToken(); // Call the backend to refresh the access token
+      await getUser(); // Set the user data after a successful refresh
+    } catch (error) {
+      setError("Session expired, please log in again");
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
+    const storedUserStatus = localStorage.getItem("userStatus");
 
-    if (storedToken && storedUser) {
-      setToken(storedToken); // Set token if found in localStorage
-      setUser(storedUser);
-    } else {
-      // login(); and get token and user
+    const fetchUser = async () => {
+      await getUser();
+    };
+
+    if (storedUserStatus) {
+      setIsAuthChecked(storedUserStatus); // Set token if found in localStorage
     }
-
+    if (!user) {
+      fetchUser(); // Fetch user data on initial render or when user changes
+    }
+    const theme = localStorage.getItem("theme");
+    document.documentElement.setAttribute("data-theme", theme);
     setLoading(false);
   }, []);
 
-  const login = async (email, password) => {
-    {
-      /**
-       * Logs in a user using their email and password.
-       *
-       * This function calls the email login API and, if successful, stores a temporary token,
-       * user profile, and marks the login provider as "email".
-       *
-       * @param {string} email - The user's email address.
-       * @param {string} password - The user's password.
-       *
-       * @returns {Promise<void>} - A promise that resolves when the login process is complete.
-       *
-       * @throws {Error} - Throws an error if the login attempt fails. The error message can
-       * be accessed via `error.response?.data?.message` or `error.message`.
-       */
-    }
-    try {
-      // const data = await apiLogin(email, password); // Call email login API
-      let token = "tempToken";
-      let user = "tempUser"
-      setToken(token); // for now this as no token is returned by api
-      setUser(user)
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", user);
-    } catch (error) {
-      console.error(
-        "login failed",
-        error.response?.data?.message || error.message
-      );
-    }
-  };
-
-  const logout = async () => {
-    {
-      /**
-       * Logs out the user by clearing the user data, token, and provider information.
-       *
-       * This function resets the user state and token, removes the token from localStorage,
-       * and clears the login provider (if any).
-       *
-       * @returns {void} - No return value. The function only performs side effects to log out the user.
-       */
-    }
-    // await apiLogout();
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-  };
-
   return (
-    <AuthContext.Provider value={{ token, user, login, logout, loading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthChecked,
+        getUser,
+        login,
+        logout,
+        loading,
+        error,
+        sessionError,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
