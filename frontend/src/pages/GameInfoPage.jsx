@@ -35,7 +35,9 @@ function GameInfoPage() {
 
       fetchSingleGame();
     } else {
+      setLoading(true);
       setSingleGame(game); // If the game is found, use it directly from the `games` array
+      setLoading(false);
     }
   }, [gameId, games, game]);
 
@@ -121,17 +123,19 @@ function GameInfoPage() {
             </div>
           </div>
 
-          <div className="trailer">
-            <h3>Trailers</h3>
-            <video id="trailer" controls>
-              <source
-                id="trailer-source"
-                type="video/mp4"
-                src={singleGame?.movies[0].mp4[480]}
-              />
-              Your browser does not support the video tag.
-            </video>
-          </div>
+          {singleGame?.movies && (
+            <div className="trailer">
+              <h3>Trailers</h3>
+              <video id="trailer" controls>
+                <source
+                  id="trailer-source"
+                  type="video/mp4"
+                  src={singleGame?.movies[0].mp4[480]}
+                />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
 
           <div className="recommendations">
             <h3>User Recommendations</h3>
@@ -160,7 +164,9 @@ function GameInfoPage() {
             <p>
               Metacritic Score:{" "}
               <a id="metacritic-link" href="#" target="_blank">
-                <span id="metacritic-score">{singleGame?.metacritic?.score}</span>
+                <span id="metacritic-score">
+                  {singleGame?.metacritic?.score}
+                </span>
               </a>
             </p>
           )}

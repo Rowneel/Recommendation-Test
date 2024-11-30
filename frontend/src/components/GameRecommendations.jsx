@@ -42,6 +42,8 @@ const GameRecommendations = () => {
       )
   );
 
+  
+
   // Function to display loading skeletons
   const renderLoadingSkeletons = () => {
     return (
