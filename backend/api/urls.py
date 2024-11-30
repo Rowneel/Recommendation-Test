@@ -4,7 +4,7 @@ from . import views
 
 
 urlpatterns = [
-    path('',views.getData),
+    path('popular_games',views.getPopularGames),
     # path('login',views.login),
     
     path('register',views.register,name="register"),
