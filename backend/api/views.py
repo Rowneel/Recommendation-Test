@@ -8,7 +8,7 @@ from django.http import JsonResponse
 import pandas as pd
 import numpy as np
 import pickle
-
+from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary
@@ -30,13 +30,21 @@ def reduce_memory(df):
     return df
 
 
-def get_similarity_from_cache():
-    similarity = cache.get('similarity_matrix')
-    if similarity is None:
-        similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
-        similarity=pickle.load(open(similarity_pickle_path,'rb'))
-        cache.set('similarity_matrix', similarity, timeout=3600)  # Cache for 1 hour
-    return similarity
+# def get_similarity_from_cache():
+#     similarity = cache.get('similarity_matrix')
+#     if similarity is None:
+#         similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
+#         similarity=pickle.load(open(similarity_pickle_path,'rb'))
+#         cache.set('similarity_matrix', similarity, timeout=3600)  # Cache for 1 hour
+#     return similarity
+
+def get_vectors_from_cache():
+    vectors = cache.get('vectors_final')
+    if vectors is None:
+        vectors_final_pickle_path = finders.find('src/vectors_final.pkl')
+        vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
+        cache.set('vectors_final', vectors, timeout=3600)  # Cache for 1 hour
+    return vectors
 
 #CODE WHILE USE DATABASE ISTEAD OF CSV
 
@@ -197,15 +205,19 @@ def app_details_view(request, app_id):
 
 @api_view(['GET'])
 def recommendation_by_description(request,game):
-    games_path = finders.find('src/final_games_data_forDesc.csv') 
+    games_path = finders.find('src/final_dataset.csv') 
     games = reduce_memory(pd.read_csv(games_path))
     n_recommendation = 20
-    similarity = get_similarity_from_cache()
+    # similarity = get_similarity_from_cache()
     index = games[games['title'] == game].index[0]
-    sim_scores = sorted(list(enumerate(similarity[index])),reverse=True,key = lambda x: x[1])
+    vectors = get_vectors_from_cache()
+    item_vector = vectors[index]
+    similarities = cosine_similarity(item_vector, vectors).flatten()
+    recommended_indices = similarities.argsort()[::-1]
     game_lists=[]
-    for i in sim_scores[1:n_recommendation]:
-        game_lists.append(games.iloc[i[0]].app_id)
+    for i in recommended_indices[1:n_recommendation]:
+        game_lists.append(games.iloc[i].app_id)
+    print(game_lists)
     return Response(game_lists)
 
 # recommend('Call of Duty®: Black Ops Cold War')
