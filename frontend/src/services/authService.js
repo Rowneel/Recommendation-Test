@@ -21,15 +21,8 @@ export const logout = async () => {
 };
 
 export const fetchUser = async () => {
-  try {
     const response = await api.get("/auth/user/");
     return response;
-  } catch (error) {
-    // Log the error or handle it in any way
-    console.error("Error fetching user:", error);
-    // You can return a fallback or an empty object if needed
-    return null;
-  }
 };
 
 export const apiRefreshToken = async () => {
