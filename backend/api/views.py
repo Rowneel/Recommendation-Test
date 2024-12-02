@@ -258,13 +258,26 @@ def post_UserLibrary(request):
 
 @api_view(['GET'])
 def api_suggestions(request):
-    query = request.GET.get('q','').strip()
+    query = request.GET.get('q', '').strip()
     if not query:
         # return Response({"error": "Search query is required."}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse([],safe=False)
-    games_path = finders.find('src/games_preprocessed_with_tags_porterstemmer.csv') 
-    games = reduce_memory(pd.read_csv(games_path,usecols=["title"])) 
-    query = "dot"
-    matches = games[games["title"].str.contains(query,case=False,na=False)]
+        return JsonResponse([], safe=False)
+    
+    games_path = finders.find('src/final_dataset.csv') 
+    games = reduce_memory(pd.read_csv(games_path, usecols=["title"])) 
+    games['title'] = games['title'].astype(str)
+    
+    matches = pd.DataFrame(columns=["title"])
+    if len(query) == 1:
+        matches = games[games['title'].str[0].str.lower() == query[0].lower()]
+    else:
+        matches = games[games['title'].str.split().str[0].str.contains(fr'\b{query}', case=False, na=False)]
+        
+        if matches.empty or len(matches)<10:
+            matches = games[games['title'].str.split().str[1].str.contains(fr'\b{query}', case=False, na=False)]
+        
+        if matches.empty or len(matches)<10:
+            matches = games[games['title'].str.contains(fr'\b{query}', case=False, na=False)]
+    
     suggestions = matches.head(10)["title"].tolist()
     return JsonResponse(suggestions, safe=False)
