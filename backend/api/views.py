@@ -9,6 +9,9 @@ import pandas as pd
 import numpy as np
 import pickle
 from sklearn.metrics.pairwise import cosine_similarity
+import re
+import json
+
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary
@@ -18,6 +21,9 @@ import numpy as np
 import pandas as pd
 from django.contrib.auth.models import User,auth
 from django.core.cache import cache
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 
@@ -248,3 +254,30 @@ def post_UserLibrary(request):
             return Response({"message": "Game added to library."}, status=status.HTTP_201_CREATED)
         return Response({"error": "Game already in library."}, status=status.HTTP_400_BAD_REQUEST)
     return Response({"error": "app_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def api_suggestions(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        # return Response({"error": "Search query is required."}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse([], safe=False)
+    
+    games_path = finders.find('src/final_dataset.csv') 
+    games = reduce_memory(pd.read_csv(games_path, usecols=["title"])) 
+    games['title'] = games['title'].astype(str)
+    
+    matches = pd.DataFrame(columns=["title"])
+    if len(query) == 1:
+        matches = games[games['title'].str[0].str.lower() == query[0].lower()]
+    else:
+        matches = games[games['title'].str.split().str[0].str.contains(fr'\b{query}', case=False, na=False)]
+        
+        if matches.empty or len(matches)<10:
+            matches = games[games['title'].str.split().str[1].str.contains(fr'\b{query}', case=False, na=False)]
+        
+        if matches.empty or len(matches)<10:
+            matches = games[games['title'].str.contains(fr'\b{query}', case=False, na=False)]
+    
+    suggestions = matches.head(10)["title"].tolist()
+    return JsonResponse(suggestions, safe=False)
