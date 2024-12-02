@@ -7,7 +7,7 @@ import MethodCard from "./forms/MethodCard";
 
 const GameRecommendationForm = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMethod, setSelectedMethod] = useState("title");
+  const [selectedMethod, setSelectedMethod] = useState("description");
   const { fetchRecommendations, loading } = useRecommendation();
 
   const handleSearch = () => {

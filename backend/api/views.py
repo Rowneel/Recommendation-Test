@@ -122,14 +122,14 @@ def getPopularGames(request):
     
     #based on hours played sorted out the most played games based on average hours played by users on games that have more than 10000 players
     most_played_game_df = no_of_ppl_played_df.merge(hours_played_df,on='app_id')
-    popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 1000].sort_values("mean_hours",ascending=False).head(50) 
+    popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 1000].sort_values("mean_hours",ascending=False).head(20) 
     
     
     #merging the popular_games_df with the games data to get the titles of the games
     top_games_df = popular_games_df.merge(games,on="app_id")
-    
+    games_list = top_games_df['app_id'].values
     #DataFrame to Dictionary conversion to get every game as dectionary
-    games_list = top_games_df.to_dict(orient='records')
+    # games_list = top_games_df.to_dict(orient='records')
     return Response(games_list)
 
 # @api_view(['POST'])

@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useRecommendation from "../hooks/useRecommendation";
 import { FaFilter } from "react-icons/fa";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 const GameRecommendations = () => {
-  const { games, error, loading } = useRecommendation();
+  const { games, error, loading} = useRecommendation();
   const [selectedGenres, setSelectedGenres] = useState(new Set());
   const [appliedGenres, setAppliedGenres] = useState(new Set()); // State to hold applied genres
   const isWindowWide = window.innerWidth > 1024;

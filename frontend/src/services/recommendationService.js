@@ -10,3 +10,7 @@ export const apiFetchRecommendationsDesc = async (title) =>{
   return response;
 }
 
+export const apiFetchPopularGames = async () => {
+  const response = await api.get(`/api/popular_games`);
+  return response;
+}
