@@ -128,7 +128,7 @@ def getPopularGames(request):
     
     #based on hours played sorted out the most played games based on average hours played by users on games that have more than 10000 players
     most_played_game_df = no_of_ppl_played_df.merge(hours_played_df,on='app_id')
-    popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 1000].sort_values("mean_hours",ascending=False).head(20) 
+    popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 1000].sort_values("mean_hours",ascending=False).head(10) 
     
     
     #merging the popular_games_df with the games data to get the titles of the games

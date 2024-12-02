@@ -14,3 +14,9 @@ export const apiFetchPopularGames = async () => {
   const response = await api.get(`/api/popular_games`);
   return response;
 }
+
+export const apiFetchSuggestions = async (searchQuery) => {
+  console.log(`fetching${searchQuery}`)
+  const response = await api.get(`/api/autosuggest_api/?q=${searchQuery}`);
+  return response;
+}
