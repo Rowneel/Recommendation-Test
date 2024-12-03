@@ -5,7 +5,6 @@ import useAuth from "../hooks/useAuth";
 
 function PrivateRoute() {
   const { isAuthChecked, getUser, loading } = useAuth();
-  console.log(loading);
   if (loading) {
     return <div className="dark:text-white flex h-screen w-full justify-center items-center bg-background">Loading...</div>;
   }

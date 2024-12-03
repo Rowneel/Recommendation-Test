@@ -6,7 +6,6 @@ import useAuth from "../../hooks/useAuth";
 
 function Navbar() {
   const { logout, isAuthChecked,user } = useAuth();
-  console.log(user);
   const [isOpen, SetIsOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();

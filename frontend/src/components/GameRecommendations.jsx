@@ -5,7 +5,7 @@ import { RiCloseLargeLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 
 const GameRecommendations = () => {
-  const { games, error, loading} = useRecommendation();
+  const { games, error, loading, popularGames } = useRecommendation();
   const [selectedGenres, setSelectedGenres] = useState(new Set());
   const [appliedGenres, setAppliedGenres] = useState(new Set()); // State to hold applied genres
   const isWindowWide = window.innerWidth > 1024;
@@ -13,7 +13,16 @@ const GameRecommendations = () => {
   const [filterLoading, setFilterLoading] = useState(false);
 
   // Example genres
-  const genres = ["action", "adventure", "strategy", "rpg", "sports"];
+  const genres = ["action", "adventure", "casual", "strategy", "rpg", "sports","racing",
+  "shooter",
+  "simulation",
+  "massively multiplayer",
+  "arcade",
+  "action rpg",
+  "platformer",
+  "puzzle",
+  "sandbox",
+  "battle royale"];
 
   // Handle genre selection
   const handleGenreChange = (genre) => {
@@ -33,15 +42,25 @@ const GameRecommendations = () => {
     setFilterLoading(false);
   };
 
-  // Filter games based on applied genres
-  const filteredGames = games.filter(
-    (game) =>
-      appliedGenres.size === 0 ||
-      game.genres.some((genre) =>
-        appliedGenres.has(genre.description.toLowerCase())
-      )
-  );
+  const resetGenres = () => {
+    setSelectedGenres(new Set()); // Clear selected genres
+    setAppliedGenres(new Set()); // Clear applied genres
+  };
 
+  const filterGames = (gameList) => {
+    return gameList.filter(
+      (game) =>
+        appliedGenres.size === 0 ||
+        game.genres.some((genre) =>
+          appliedGenres.has(genre.description.toLowerCase())
+        )
+    );
+  };
+
+  // Filter games based on applied genres
+  const filteredGames = filterGames(games);
+
+  const filteredPopularGames = filterGames(popularGames);
   
 
   // Function to display loading skeletons
@@ -107,12 +126,20 @@ const GameRecommendations = () => {
               </label>
             </div>
           ))}
-          <button
-            onClick={applyFilters}
-            className="mt-4 px-4 py-2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
-          >
-            Apply Filters
-          </button>
+          <div className="flex gap-4">
+            <button
+              onClick={resetGenres}
+              className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+            >
+              Reset
+            </button>
+            <button
+              onClick={applyFilters}
+              className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+            >
+              Apply
+            </button>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -127,22 +154,22 @@ const GameRecommendations = () => {
           )}
           {/* Show skeletons during loading */}
           {loading || filterLoading ? renderLoadingSkeletons() : null}
-          {console.log(games.length)}
           {!loading &&
             !filterLoading &&
             games.length === 0 &&
-            filteredGames.length === 0 && (
+            filteredGames.length === 0 && filteredPopularGames.length === 0 && (
               <p>No games found based on your filter criteria.</p>
             )}
+          {games.length === 0 && <div className="text-white">Popular Games:</div>}
 
           <div
             className={`grid gap-5 grid-cols-1 sm:grid-cols-2 ${
               isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
             }`}
           >
-            {filteredGames.map((game) => (
+            {(filteredGames.length > 0? filteredGames : filteredPopularGames).map((game) => (
               <Link to={`/game/${game.steam_appid}`} key={game.steam_appid}>
-                <div className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ">
                   <img
                     className="rounded-t-lg w-full h-48 object-cover"
                     src={game.header_image}

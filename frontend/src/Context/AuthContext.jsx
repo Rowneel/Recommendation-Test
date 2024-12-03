@@ -54,7 +54,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await apiFetchUser(); // Call user API
       if (res.data) {
-        console.log(res.data);
         setUser(res.data);
         localStorage.setItem("userStatus", true);
         setIsAuthChecked(true);
@@ -62,7 +61,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.response?.status === 401) {
         // If 401 (Unauthorized), try refreshing the token
-        console.log("Refresh")
         await refreshAccessToken();
       } else {
         setSessionError("Unable to authenticate");
