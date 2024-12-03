@@ -136,6 +136,9 @@ def getPopularGames(request):
     games_list = top_games_df['app_id'].values
     #DataFrame to Dictionary conversion to get every game as dectionary
     # games_list = top_games_df.to_dict(orient='records')
+
+    # top_games_df = pd.read_pickle(finders.find('src/popular_games_df.pkl'))
+    # games_list = top_games_df['app_id'].values
     return Response(games_list)
 
 # @api_view(['POST'])
