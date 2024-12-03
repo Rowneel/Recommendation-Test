@@ -9,15 +9,13 @@ def reduce_memory(df):
             df[col] = df[col].astype('int32')
     return df
 
+# Load data
 games = reduce_memory(pd.read_csv('./games.csv',usecols=["app_id","title","date_release","price_original"]))
-
-
 # users = reduce_memory(pd.read_csv('./users.csv'))
 # print(games.head(7))
-
 recommendations = reduce_memory(pd.read_csv('./recommendations.csv',usecols=["app_id","hours","user_id"], ))
 
-
+# Merging recommendations and games data
 recommend_with_users = recommendations.merge(games,on='app_id')
 # print(recommend_with_users.head(7))
 
