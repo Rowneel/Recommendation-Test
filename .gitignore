@@ -15,3 +15,7 @@ recommendations_large.csv
 users.csv
 
 games_metadata.json
+
+node_modules
+db.sqlite3
+__pycache__
