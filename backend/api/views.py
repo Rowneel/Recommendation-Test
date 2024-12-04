@@ -11,6 +11,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import json
+from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory
 
 from rest_framework import status
 # from api.models import Game,Recommendation
@@ -27,13 +28,13 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 
-def reduce_memory(df):
-    for col in df.columns:
-        if df[col].dtype == 'float64':
-            df[col] = df[col].astype('float32')
-        if df[col].dtype == 'int64':
-            df[col] = df[col].astype('int32')
-    return df
+# def reduce_memory(df):
+#     for col in df.columns:
+#         if df[col].dtype == 'float64':
+#             df[col] = df[col].astype('float32')
+#         if df[col].dtype == 'int64':
+#             df[col] = df[col].astype('int32')
+#     return df
 
 
 # def get_similarity_from_cache():
@@ -223,7 +224,8 @@ def recommendation_by_description(request,game):
     game_lists=[]
     for i in recommended_indices[1:n_recommendation]:
         game_lists.append(games.iloc[i].app_id)
-    print(game_lists)
+    # print(game_lists)
+    print(type(game_lists))
     return Response(game_lists)
 
 # recommend('Call of Duty®: Black Ops Cold War')
@@ -281,3 +283,17 @@ def api_suggestions(request):
     
     suggestions = matches.head(10)["title"].tolist()
     return JsonResponse(suggestions, safe=False)
+
+
+
+@api_view(['GET'])
+def recommendation_by_title(request,title):
+    games = preprocess_title('src/games_preprocessed_with_tags_porterstemmer.csv')
+    cosine_sim = load_matrix('src/vectors_for_title.pkl')
+    # title = request.GET.get('title')  # Get title from query params
+    if not title:
+        return JsonResponse({'error': 'No title provided'}, status=400)
+    
+    recommendations = get_recommendations(title, games, cosine_sim)
+    # return JsonResponse({'recommendations': recommendations})
+    return Response(recommendations)
