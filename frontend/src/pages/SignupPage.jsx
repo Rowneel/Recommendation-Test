@@ -44,7 +44,6 @@ function SignupPage() {
         navigate("/login");
       }
     } catch (err) {
-      console.log(err);
       // Handle error from login (e.g., incorrect credentials)
       setError(err.response.data.error);
     }
