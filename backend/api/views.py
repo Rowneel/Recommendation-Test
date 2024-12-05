@@ -169,7 +169,7 @@ def register(request):
         return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
     # if not avatar:
     #     return Response({"error": "Please upload an avatar."}, status=status.HTTP_400_BAD_REQUEST)
-    print(avatar)
+
     if CustomUser.objects.filter(email=email).exists():
         return Response({"error": "The email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
