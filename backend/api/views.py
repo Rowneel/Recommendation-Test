@@ -15,8 +15,9 @@ from .utils.recommendations import preprocess_title, load_matrix, get_recommenda
 
 from rest_framework import status
 # from api.models import Game,Recommendation
-from api.models import UserLibrary
-from api.serializers import UserLibrarySerializer
+from api.models import UserLibrary,CustomUser
+from api.serializers import UserLibrarySerializer,CustomUserDetailsSerializer
+from dj_rest_auth.views import UserDetailsView
 # from api.serializers import GameSerializer,RecommendationSerializer
 import numpy as np
 import pandas as pd
@@ -157,20 +158,23 @@ def register(request):
     password = request.data.get('password', "")
     first_name = request.data.get('first_name', "")
     last_name = request.data.get('last_name', "")
+    avatar = request.FILES.get('avatar', None) 
+    
+    # Check if the username or email already exists
+    if CustomUser.objects.filter(username=username).exists():
+        return Response({"error": "The username already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
     # Basic validation
     if not username or not email or not password:
         return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Check if the username or email already exists
-    if User.objects.filter(username=username).exists():
-        return Response({"error": "The username already exists."}, status=status.HTTP_400_BAD_REQUEST)
-
-    if User.objects.filter(email=email).exists():
+    # if not avatar:
+    #     return Response({"error": "Please upload an avatar."}, status=status.HTTP_400_BAD_REQUEST)
+    print(avatar)
+    if CustomUser.objects.filter(email=email).exists():
         return Response({"error": "The email already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        user = User.objects.create_user(username=username, email=email, password=password,first_name = first_name, last_name= last_name)
+        user = CustomUser.objects.create_user(username=username, email=email, password=password,first_name = first_name, last_name= last_name,avatar=avatar)
         user.save()
         response =  Response({"message": "User created successfully"})
         print(response.data)
@@ -297,3 +301,8 @@ def recommendation_by_title(request,title):
     recommendations = get_recommendations(title, games, cosine_sim)
     # return JsonResponse({'recommendations': recommendations})
     return Response(recommendations)
+
+
+class CustomUserView(UserDetailsView):
+    # Use your custom serializer here
+    serializer_class = CustomUserDetailsSerializer
