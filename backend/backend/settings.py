@@ -67,7 +67,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 
 # SECRET_KEY = config('SECRET_KEY') 
-
+AUTH_USER_MODEL = 'api.CustomUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -90,6 +90,10 @@ REST_AUTH = {
     # "JWT_AUTH_REFRESH_HTTPONLY": False,  # Refresh token can be accessed (optional)
     
 }
+
+# REST_AUTH_SERIALIZERS = {
+#     'USER_DETAILS_SERIALIZER': 'api.serializers.CustomUserDetailsSerializer',
+# }
 # Secure Cookie Settings
 JWT_AUTH_COOKIE_SECURE = True  # Only sent over HTTPS
 JWT_AUTH_COOKIE_HTTPONLY = True  # Prevents JavaScript access to access token cookie
@@ -168,7 +172,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path
 from . import views
+from .views import CustomUserView
+
 
 
 urlpatterns = [
@@ -14,8 +16,10 @@ urlpatterns = [
     path('get_UserLibrary',views.get_UserLibrary,name="get_UserLibrary"),
     path('post_UserLibrary',views.post_UserLibrary,name="post_UserLibrary"),
     path('autosuggest_api/',views.api_suggestions,name="autosuggest_api"),
+    path('recommendation_title/<str:title>',views.recommendation_by_title,name='recommendation_title'),
+    path('user',CustomUserView.as_view(),name="user"),
+    
 
     # path('logout',views.logout),
 
-    
 ]
