@@ -21,10 +21,13 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await apiLogin(formData);
-      setUser(res.data.user); // Set the user after successful login
+      console.log(res)
+      // setUser(res.data.user); // Set the user after successful login
       localStorage.setItem("userStatus", true);
       setIsAuthChecked(true);
     } catch (error) {
+      console.log(error);
+      
       setError(error.response?.data?.message || error.message);
       console.error("Login failed", error);
     } finally {

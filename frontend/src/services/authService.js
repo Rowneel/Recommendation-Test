@@ -20,7 +20,7 @@ export const logout = async () => {
 };
 
 export const fetchUser = async () => {
-    const response = await api.get("/auth/user/");
+    const response = await api.get("/api/user");
     return response;
 };
 

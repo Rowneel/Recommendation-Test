@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from "react";
 import {
   apiFetchGamesDetails,
   apiFetchRecommendationsDesc,
+  apiFetchRecommendationsTitle,
   apiFetchPopularGames,
 } from "../services/recommendationService";
 
@@ -16,7 +17,7 @@ export const RecommendationProvider = ({ children }) => {
 
   // Fetch popular games on component mount
   useEffect(() => {
-    fetchPopularGames();
+    // fetchPopularGames();
   }, []);
 
   // Fetch popular games
@@ -104,6 +105,10 @@ export const RecommendationProvider = ({ children }) => {
       let gameIds = [];
       if (selectedMethod === "description") {
         const res = await apiFetchRecommendationsDesc(searchQuery);
+        gameIds = res.data;
+      }
+      if(selectedMethod === "title"){
+        const res = await apiFetchRecommendationsTitle(searchQuery);
         gameIds = res.data;
       }
       // Fetch game details for search query

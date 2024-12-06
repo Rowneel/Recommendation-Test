@@ -13,7 +13,8 @@ function Navbar() {
   const toggleMenu = () => {
     SetIsOpen(!isOpen);
   };
-
+  console.log(user);
+  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -61,7 +62,7 @@ function Navbar() {
           <li className="hover:text-accent font-bold text-xl">
             <Link to={"/about-us"}>ABOUT US</Link>
           </li>
-          {isAuthChecked ? (
+          {isAuthChecked && !sessionError ? (
             <div className="relative group">
               <button className="bg-gray-800 border-2 border-primary text-black p-3 rounded-full hover:opacity-50">
                 <img src="/vite.svg" width={20} height={20} alt="" />
