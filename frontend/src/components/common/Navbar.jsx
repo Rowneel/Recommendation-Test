@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 function Navbar() {
-  const { logout, isAuthChecked,user } = useAuth();
+  const { logout, isAuthChecked,user,sessionError } = useAuth();
   const [isOpen, SetIsOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -130,7 +130,7 @@ function Navbar() {
               About Us
             </Link>
           </li>
-          {isAuthChecked ? (
+          {isAuthChecked && !sessionError ? (
             <>
               <li className="w-full text-center">
                 <Link

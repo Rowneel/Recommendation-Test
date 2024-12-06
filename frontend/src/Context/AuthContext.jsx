@@ -51,6 +51,7 @@ export const AuthProvider = ({ children }) => {
   // Fetch user data (to keep session active)
   const getUser = async () => {
     setLoading(true);
+    setSessionError(null); //
     try {
       const res = await apiFetchUser(); // Call user API
       if (res.data) {
@@ -75,7 +76,7 @@ export const AuthProvider = ({ children }) => {
       await apiRefreshToken(); // Call the backend to refresh the access token
       await getUser(); // Set the user data after a successful refresh
     } catch (error) {
-      setError("Session expired, please log in again");
+      setSessionError("Session expired, please log in again");
     }
   };
 
