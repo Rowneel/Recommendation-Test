@@ -26,42 +26,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-#CODE WHILE USING CSV
-@api_view(['GET'])
-def getPopularGames(request):
-    # gettign data from csv file
-    games_path = finders.find('src/games.csv')
-    recommendations_path = finders.find('src/recommendations.csv')
-    games = reduce_memory(pd.read_csv(games_path,usecols=["app_id","title","date_release","price_original"]))
-    recommendations = reduce_memory(pd.read_csv(recommendations_path,usecols=["app_id","hours","user_id"], ))
-    
-    #merging the recommendations with the games data
-    recommend_with_users = recommendations.merge(games,on='app_id')
-    
-    #finding the number of people that played the game
-    no_of_ppl_played_df = recommend_with_users.groupby('app_id').count()['user_id'].reset_index()
-    #replacing the user_id with the no_of_ppl for clarity
-    no_of_ppl_played_df.rename(columns={'user_id':'no_of_ppl'},inplace=True)
-    
-    #finding the average time that the users have played the game
-    hours_played_df = recommend_with_users.groupby('app_id')["hours"].mean().reset_index()
-    #replacing the hours with mean_hours for clarity
-    hours_played_df.rename(columns={'hours':'mean_hours'},inplace=True)
-    
-    #based on hours played sorted out the most played games based on average hours played by users on games that have more than 10000 players
-    most_played_game_df = no_of_ppl_played_df.merge(hours_played_df,on='app_id')
-    popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 1000].sort_values("mean_hours",ascending=False).head(10) 
-    
-    
-    #merging the popular_games_df with the games data to get the titles of the games
-    top_games_df = popular_games_df.merge(games,on="app_id")
-    games_list = top_games_df['app_id'].values
-    #DataFrame to Dictionary conversion to get every game as dectionary
-    # games_list = top_games_df.to_dict(orient='records')
-    return Response(games_list)
 
-
-    
 @api_view(['POST'])
 def register(request):
     username = request.data.get('username', "")
@@ -70,12 +35,10 @@ def register(request):
     first_name = request.data.get('first_name', "")
     last_name = request.data.get('last_name', "")
     avatar = request.FILES.get('avatar', None) 
-    
-    # Check if the username or email already exists
+
     if CustomUser.objects.filter(username=username).exists():
         return Response({"error": "The username already exists."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Basic validation
     if not username or not email or not password:
         return Response({"error": "Username, email, and password are required."}, status=status.HTTP_400_BAD_REQUEST)
     # if not avatar:
@@ -93,112 +56,9 @@ def register(request):
     except IntegrityError:
         return Response({"error": "Failed to create user. Please try again."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # More appropriate for unexpected errors
-
-
-
-@api_view(['GET'])
-def app_details_view(request, app_id):
-    steam_api_url = f'https://store.steampowered.com/api/appdetails?appids={app_id}'
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
     
-    try:
-        response = requests.get(steam_api_url)
-        response_data = response.json()
-
-        if response_data[str(app_id)]['success']:
-            return JsonResponse(response_data[str(app_id)]['data'], status=200)
-        else:
-            return JsonResponse({"error": "App not found"}, status=404)
-
-    except requests.RequestException as e:
-        return JsonResponse({"error": str(e)}, status=500)
     
-
-
-@api_view(['GET'])
-def recommendation_by_description(request,game):
-    games_path = finders.find('src/final_dataset.csv') 
-    games = reduce_memory(pd.read_csv(games_path))
-    n_recommendation = 20
-    # similarity = get_similarity_from_cache()
-    index = games[games['title'] == game].index[0]
-    vectors = get_vectors_from_cache()
-    item_vector = vectors[index]
-    similarities = cosine_similarity(item_vector, vectors).flatten()
-    recommended_indices = similarities.argsort()[::-1]
-    game_lists=[]
-    for i in recommended_indices[1:n_recommendation]:
-        game_lists.append(games.iloc[i].app_id)
-    # print(game_lists)
-    print(type(game_lists))
-    return Response(game_lists)
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_UserLibrary(request):
-    user = request.user
-    library = UserLibrary.objects.filter(user=user)
-    if library.exists():
-        serializer = UserLibrarySerializer(library, many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
-    return Response({"error": "User's library is empty."}, status=status.HTTP_404_NOT_FOUND)
-
-
-# add to user library list
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def post_UserLibrary(request):
-    user = request.user
-    app_id = request.data.get("app_id")
-    if app_id:
-        # Check if this app_id is already in the user's library
-        if not UserLibrary.objects.filter(user=user, app_id=app_id).exists():
-            UserLibrary.objects.create(user=user, app_id=app_id)
-            return Response({"message": "Game added to library."}, status=status.HTTP_201_CREATED)
-        return Response({"error": "Game already in library."}, status=status.HTTP_400_BAD_REQUEST)
-    return Response({"error": "app_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def api_suggestions(request):
-    query = request.GET.get('q', '').strip()
-    if not query:
-        # return Response({"error": "Search query is required."}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse([], safe=False)
-    
-    games_path = finders.find('src/final_dataset.csv') 
-    games = reduce_memory(pd.read_csv(games_path, usecols=["title"])) 
-    games['title'] = games['title'].astype(str)
-    
-    matches = pd.DataFrame(columns=["title"])
-    if len(query) == 1:
-        matches = games[games['title'].str[0].str.lower() == query[0].lower()]
-    else:
-        matches = games[games['title'].str.split().str[0].str.contains(fr'\b{query}', case=False, na=False)]
-        
-        if matches.empty or len(matches)<10:
-            matches = games[games['title'].str.split().str[1].str.contains(fr'\b{query}', case=False, na=False)]
-        
-        if matches.empty or len(matches)<10:
-            matches = games[games['title'].str.contains(fr'\b{query}', case=False, na=False)]
-    
-    suggestions = matches.head(10)["title"].tolist()
-    return JsonResponse(suggestions, safe=False)
-
-
-@api_view(['GET'])
-def recommendation_by_title(request,title):
-    games = preprocess_title('src/games_preprocessed_with_tags_porterstemmer.csv')
-    cosine_sim = load_matrix('src/vectors_for_title.pkl')
-    # title = request.GET.get('title')  # Get title from query params
-    if not title:
-        return JsonResponse({'error': 'No title provided'}, status=400)
-    
-    recommendations = get_recommendations(title, games, cosine_sim)
-    # return JsonResponse({'recommendations': recommendations})
-    return Response(recommendations)
-
 
 class CustomUserView(UserDetailsView):
     # Use your custom serializer here
@@ -237,7 +97,119 @@ def update_user(request):
         return Response({"message": "User details updated successfully"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+    
+    
+#CODE WHILE USING CSV
+@api_view(['GET'])
+def getPopularGames(request):
+    # gettign data from csv file
+    games_path = finders.find('src/games.csv')
+    recommendations_path = finders.find('src/recommendations.csv')
+    games = reduce_memory(pd.read_csv(games_path,usecols=["app_id","title","date_release","price_original"]))
+    recommendations = reduce_memory(pd.read_csv(recommendations_path,usecols=["app_id","hours","user_id"], ))
+    
+    #merging the recommendations with the games data
+    recommend_with_users = recommendations.merge(games,on='app_id')
+    
+    #finding the number of people that played the game
+    no_of_ppl_played_df = recommend_with_users.groupby('app_id').count()['user_id'].reset_index()
+    #replacing the user_id with the no_of_ppl for clarity
+    no_of_ppl_played_df.rename(columns={'user_id':'no_of_ppl'},inplace=True)
+    
+    #finding the average time that the users have played the game
+    hours_played_df = recommend_with_users.groupby('app_id')["hours"].mean().reset_index()
+    #replacing the hours with mean_hours for clarity
+    hours_played_df.rename(columns={'hours':'mean_hours'},inplace=True)
+    
+    #based on hours played sorted out the most played games based on average hours played by users on games that have more than 10000 players
+    most_played_game_df = no_of_ppl_played_df.merge(hours_played_df,on='app_id')
+    popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 1000].sort_values("mean_hours",ascending=False).head(10) 
+    
+    
+    #merging the popular_games_df with the games data to get the titles of the games
+    top_games_df = popular_games_df.merge(games,on="app_id")
+    games_list = top_games_df['app_id'].values
+    #DataFrame to Dictionary conversion to get every game as dectionary
+    # games_list = top_games_df.to_dict(orient='records')
+    return Response(games_list)
+
+
+
+@api_view(['GET'])
+def recommendation_by_description(request,game):
+    games_path = finders.find('src/final_dataset.csv') 
+    games = reduce_memory(pd.read_csv(games_path))
+    n_recommendation = 20
+    # similarity = get_similarity_from_cache()
+    index = games[games['title'] == game].index[0]
+    vectors = get_vectors_from_cache()
+    item_vector = vectors[index]
+    similarities = cosine_similarity(item_vector, vectors).flatten()
+    recommended_indices = similarities.argsort()[::-1]
+    game_lists=[]
+    for i in recommended_indices[1:n_recommendation]:
+        game_lists.append(games.iloc[i].app_id)
+    # print(game_lists)
+    print(type(game_lists))
+    return Response(game_lists)
+
+
+@api_view(['GET'])
+def recommendation_by_title(request,title):
+    games = preprocess_title('src/games_preprocessed_with_tags_porterstemmer.csv')
+    cosine_sim = load_matrix('src/vectors_for_title.pkl')
+    # title = request.GET.get('title')  # Get title from query params
+    if not title:
+        return JsonResponse({'error': 'No title provided'}, status=400)
+    
+    recommendations = get_recommendations(title, games, cosine_sim)
+    # return JsonResponse({'recommendations': recommendations})
+    return Response(recommendations)
+
+
+@api_view(['GET'])
+def app_details_view(request, app_id):
+    steam_api_url = f'https://store.steampowered.com/api/appdetails?appids={app_id}'
+    
+    try:
+        response = requests.get(steam_api_url)
+        response_data = response.json()
+
+        if response_data[str(app_id)]['success']:
+            return JsonResponse(response_data[str(app_id)]['data'], status=200)
+        else:
+            return JsonResponse({"error": "App not found"}, status=404)
+
+    except requests.RequestException as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_UserLibrary(request):
+    user = request.user
+    library = UserLibrary.objects.filter(user=user)
+    if library.exists():
+        serializer = UserLibrarySerializer(library, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+    return Response({"error": "User's library is empty."}, status=status.HTTP_404_NOT_FOUND)
+
+
+# add to user library list
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def post_UserLibrary(request):
+    user = request.user
+    app_id = request.data.get("app_id")
+    if app_id:
+        # Check if this app_id is already in the user's library
+        if not UserLibrary.objects.filter(user=user, app_id=app_id).exists():
+            UserLibrary.objects.create(user=user, app_id=app_id)
+            return Response({"message": "Game added to library."}, status=status.HTTP_201_CREATED)
+        return Response({"error": "Game already in library."}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"error": "app_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -255,6 +227,34 @@ def remove_UserLibrary(request):
         return Response({"error": "Game is not in the library."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+def api_suggestions(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        # return Response({"error": "Search query is required."}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse([], safe=False)
+    
+    games_path = finders.find('src/final_dataset.csv') 
+    games = reduce_memory(pd.read_csv(games_path, usecols=["title"])) 
+    games['title'] = games['title'].astype(str)
+    
+    matches = pd.DataFrame(columns=["title"])
+    if len(query) == 1:
+        matches = games[games['title'].str[0].str.lower() == query[0].lower()]
+    else:
+        matches = games[games['title'].str.split().str[0].str.contains(fr'\b{query}', case=False, na=False)]
+        
+        if matches.empty or len(matches)<10:
+            matches = games[games['title'].str.split().str[1].str.contains(fr'\b{query}', case=False, na=False)]
+        
+        if matches.empty or len(matches)<10:
+            matches = games[games['title'].str.contains(fr'\b{query}', case=False, na=False)]
+    
+    suggestions = matches.head(10)["title"].tolist()
+    return JsonResponse(suggestions, safe=False)
+
+        
     
 # @api_view(['POST'])
 # def login(request):
