@@ -247,7 +247,7 @@ def get_UserLibrary(request):
 
 
 
-
+# add to user library list
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def post_UserLibrary(request):
@@ -306,3 +306,55 @@ def recommendation_by_title(request,title):
 class CustomUserView(UserDetailsView):
     # Use your custom serializer here
     serializer_class = CustomUserDetailsSerializer
+    
+    
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_avatar(request):
+    user = request.user
+    avatar = request.FILES.get('avatar', None)
+    
+    if avatar:
+        user.avatar = avatar
+        user.save()
+        return Response({"message": "Avatar updated successfully"}, status=status.HTTP_200_OK)
+    return Response({"error": "Please upload an avatar."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_user(request):
+    user = request.user
+    username = request.data.get('username', "")
+    first_name = request.data.get('first_name', "")
+    last_name = request.data.get('last_name', "")
+    if not username:
+        return Response({"error": "Username is required."}, status=status.HTTP_400_BAD_REQUEST)
+    if CustomUser.objects.exclude(pk=user.pk).filter(username=username).exists():
+        return Response({"error": "The username already exists."}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+        return Response({"message": "User details updated successfully"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def remove_UserLibrary(request):
+    user = request.user
+    app_id = request.data.get("app_id")
+    if not app_id:
+        return Response({"error": "app_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        game = UserLibrary.objects.filter(user=user, app_id=app_id).first()
+        if game:
+            game.delete()
+            return Response({"message": "Game removed from library."}, status=status.HTTP_200_OK)
+        return Response({"error": "Game is not in the library."}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

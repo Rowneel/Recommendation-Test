@@ -48,24 +48,21 @@ class CustomUser(AbstractUser):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-        # Process the avatar image if it exists
         if self.avatar:
             avatar_path = self.avatar.path
             try:
                 with Image.open(avatar_path) as img:
-                    # Resize and crop the image
-                    img = img.convert("RGB")  # Ensure it's in RGB mode
-                    # img.thumbnail((640, 640))  # Resize while maintaining aspect ratio
+        
+                    img = img.convert("RGB")  
+                    # img.thumbnail((640, 640))  
                     width, height = img.size
                     new_size = min(width, height)
                     left = (width - new_size) / 2
                     top = (height - new_size) / 2
                     right = (width + new_size) / 2
                     bottom = (height + new_size) / 2
-
-                    img = img.crop((left, top, right, bottom))  # Crop to a centered square
-                    img = img.resize((640, 640))  # Resize to 300x300
-                    img.save(avatar_path, format='JPEG', quality=100)  # Save as JPEG with good quality
+                    img = img.crop((left, top, right, bottom))  
+                    img = img.resize((640, 640)) 
+                    img.save(avatar_path, format='JPEG', quality=100) 
             except Exception as e:
                 print(f"Error processing avatar: {e}")
