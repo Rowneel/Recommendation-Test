@@ -7,6 +7,7 @@ from django.contrib.staticfiles import finders
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from django.core.cache import cache
 
 def reduce_memory(df):
     for col in df.columns:
@@ -52,5 +53,15 @@ def get_recommendations(title, games, cosine_sim, n_recommendation=20):
         return games['app_id'].iloc[game_indices].tolist()
     except IndexError:
         return []
+    
+
+
+def get_vectors_from_cache():
+    vectors = cache.get('vectors_final')
+    if vectors is None:
+        vectors_final_pickle_path = finders.find('src/vectors_final.pkl')
+        vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
+        cache.set('vectors_final', vectors, timeout=3600)  # Cache for 1 hour
+    return vectors
 
 

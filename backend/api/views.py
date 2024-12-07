@@ -11,8 +11,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import json
-from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory
-
+from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary,CustomUser
@@ -22,19 +21,9 @@ from dj_rest_auth.views import UserDetailsView
 import numpy as np
 import pandas as pd
 from django.contrib.auth.models import User,auth
-from django.core.cache import cache
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-
-def get_vectors_from_cache():
-    vectors = cache.get('vectors_final')
-    if vectors is None:
-        vectors_final_pickle_path = finders.find('src/vectors_final.pkl')
-        vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
-        cache.set('vectors_final', vectors, timeout=3600)  # Cache for 1 hour
-    return vectors
 
 
 #CODE WHILE USING CSV
