@@ -28,24 +28,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-
-# def reduce_memory(df):
-#     for col in df.columns:
-#         if df[col].dtype == 'float64':
-#             df[col] = df[col].astype('float32')
-#         if df[col].dtype == 'int64':
-#             df[col] = df[col].astype('int32')
-#     return df
-
-
-# def get_similarity_from_cache():
-#     similarity = cache.get('similarity_matrix')
-#     if similarity is None:
-#         similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
-#         similarity=pickle.load(open(similarity_pickle_path,'rb'))
-#         cache.set('similarity_matrix', similarity, timeout=3600)  # Cache for 1 hour
-#     return similarity
-
 def get_vectors_from_cache():
     vectors = cache.get('vectors_final')
     if vectors is None:
@@ -53,57 +35,6 @@ def get_vectors_from_cache():
         vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
         cache.set('vectors_final', vectors, timeout=3600)  # Cache for 1 hour
     return vectors
-
-#CODE WHILE USE DATABASE ISTEAD OF CSV
-
-# @api_view(['GET'])
-# def getData(request):
-#     #get game and recommendation data from database after importing csv file into the database
-#     game_data = Game.objects.all().values("app_id","title","date_release","price_original")
-#     game_df = pd.DataFrame(game_data)
-#     # print(game_df)
-    
-#     recommendation_data = Recommendation.objects.all().values("app_id","hours","user_id")
-#     recommendation_df = pd.DataFrame(recommendation_data)
-#     # print(recommendation_df)
-    
-#     #merging the dataframes
-#     recommend_with_users = recommendation_df.merge(game_df,on='app_id')
-
-#     # print(recommend_with_users)
-    
-#     #finding the number of people that played the game
-#     no_of_ppl_played_df = recommend_with_users.groupby('app_id').count()['user_id'].reset_index()
-#     #replacing the user_id with the no_of_ppl for clarity
-#     no_of_ppl_played_df.rename(columns={'user_id':'no_of_ppl'},inplace=True)
-    
-    
-    
-#     #finding the average time that the users have played the game
-#     hours_played_df = recommend_with_users.groupby('app_id')["hours"].mean().reset_index()
-#     #replacing the hours with mean_hours for clarity
-#     hours_played_df.rename(columns={'hours':'mean_hours'},inplace=True)
-    
-    
-#     #based on hours played sorted out the most played games based on average hours played by users on games that have more than 10000 players
-#     most_played_game_df = no_of_ppl_played_df.merge(hours_played_df,on='app_id')
-#     popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 10000].sort_values("mean_hours",ascending=False).head(10)
-    
-#     #merging the popular_games_df with the games data to get the titles of the games
-#     top_games_df = popular_games_df.merge(game_df,on="app_id")
-    
-    
-#     #DataFrame to Dictionary conversion to get every game as dictionary
-#     games_list = top_games_df.to_dict(orient='records')
-#     return Response(games_list)
-    
-    
-    
-#     #for serializer.....
-    
-# #     games = Game.objects.all().values()[:10]  # Fetch all games
-# #     serializer = GameSerializer(games, many=True)  # Serialize the games data
-# #     return Response(serializer.data)  # Return the serialized data as JSON
 
 
 #CODE WHILE USING CSV
@@ -140,16 +71,7 @@ def getPopularGames(request):
     # games_list = top_games_df.to_dict(orient='records')
     return Response(games_list)
 
-# @api_view(['POST'])
-# def login(request):
-#     username = request.data.get("username")
-#     password = request.data.get('password')
-#     user = auth.authenticate(username=username, password=password)    
-#     if user is not None:
-#         auth.login(request, user)
-#         response =  Response({"message": "User logged in successfully"})
-#         print(response.data)
-#         return response
+
     
 @api_view(['POST'])
 def register(request):
@@ -184,16 +106,6 @@ def register(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # More appropriate for unexpected errors
 
-# @api_view(['GET'])
-# def logout(request):
-#     auth.logout(request)
-#     return Response({"message": "User logged out successfully"})
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def test(request):
-    return Response({"message": "You are authenticated"})
 
 
 @api_view(['GET'])
@@ -232,8 +144,6 @@ def recommendation_by_description(request,game):
     print(type(game_lists))
     return Response(game_lists)
 
-# recommend('Call of Duty®: Black Ops Cold War')
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -244,7 +154,6 @@ def get_UserLibrary(request):
         serializer = UserLibrarySerializer(library, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     return Response({"error": "User's library is empty."}, status=status.HTTP_404_NOT_FOUND)
-
 
 
 # add to user library list
@@ -287,7 +196,6 @@ def api_suggestions(request):
     
     suggestions = matches.head(10)["title"].tolist()
     return JsonResponse(suggestions, safe=False)
-
 
 
 @api_view(['GET'])
@@ -358,3 +266,99 @@ def remove_UserLibrary(request):
         return Response({"error": "Game is not in the library."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+# @api_view(['POST'])
+# def login(request):
+#     username = request.data.get("username")
+#     password = request.data.get('password')
+#     user = auth.authenticate(username=username, password=password)    
+#     if user is not None:
+#         auth.login(request, user)
+#         response =  Response({"message": "User logged in successfully"})
+#         print(response.data)
+#         return response
+
+
+
+# @api_view(['GET'])
+# def logout(request):
+#     auth.logout(request)
+#     return Response({"message": "User logged out successfully"})
+
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def test(request):
+#     return Response({"message": "You are authenticated"})
+
+
+#CODE WHILE USE DATABASE ISTEAD OF CSV
+
+# @api_view(['GET'])
+# def getData(request):
+#     #get game and recommendation data from database after importing csv file into the database
+#     game_data = Game.objects.all().values("app_id","title","date_release","price_original")
+#     game_df = pd.DataFrame(game_data)
+#     # print(game_df)
+    
+#     recommendation_data = Recommendation.objects.all().values("app_id","hours","user_id")
+#     recommendation_df = pd.DataFrame(recommendation_data)
+#     # print(recommendation_df)
+    
+#     #merging the dataframes
+#     recommend_with_users = recommendation_df.merge(game_df,on='app_id')
+
+#     # print(recommend_with_users)
+    
+#     #finding the number of people that played the game
+#     no_of_ppl_played_df = recommend_with_users.groupby('app_id').count()['user_id'].reset_index()
+#     #replacing the user_id with the no_of_ppl for clarity
+#     no_of_ppl_played_df.rename(columns={'user_id':'no_of_ppl'},inplace=True)
+    
+    
+    
+#     #finding the average time that the users have played the game
+#     hours_played_df = recommend_with_users.groupby('app_id')["hours"].mean().reset_index()
+#     #replacing the hours with mean_hours for clarity
+#     hours_played_df.rename(columns={'hours':'mean_hours'},inplace=True)
+    
+    
+#     #based on hours played sorted out the most played games based on average hours played by users on games that have more than 10000 players
+#     most_played_game_df = no_of_ppl_played_df.merge(hours_played_df,on='app_id')
+#     popular_games_df = most_played_game_df[most_played_game_df['no_of_ppl'] >= 10000].sort_values("mean_hours",ascending=False).head(10)
+    
+#     #merging the popular_games_df with the games data to get the titles of the games
+#     top_games_df = popular_games_df.merge(game_df,on="app_id")
+    
+    
+#     #DataFrame to Dictionary conversion to get every game as dictionary
+#     games_list = top_games_df.to_dict(orient='records')
+#     return Response(games_list)
+    
+    
+    
+#     #for serializer.....
+    
+# #     games = Game.objects.all().values()[:10]  # Fetch all games
+# #     serializer = GameSerializer(games, many=True)  # Serialize the games data
+# #     return Response(serializer.data)  # Return the serialized data as JSON
+
+
+# def reduce_memory(df):
+#     for col in df.columns:
+#         if df[col].dtype == 'float64':
+#             df[col] = df[col].astype('float32')
+#         if df[col].dtype == 'int64':
+#             df[col] = df[col].astype('int32')
+#     return df
+
+
+# def get_similarity_from_cache():
+#     similarity = cache.get('similarity_matrix')
+#     if similarity is None:
+#         similarity_pickle_path = finders.find('src/similarity_forDesc.pkl')
+#         similarity=pickle.load(open(similarity_pickle_path,'rb'))
+#         cache.set('similarity_matrix', similarity, timeout=3600)  # Cache for 1 hour
+#     return similarity
+
