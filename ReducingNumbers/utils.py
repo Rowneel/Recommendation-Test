@@ -1,9 +1,9 @@
-# import pandas as pd
+import pandas as pd
 # from .utils import get_game_recommendations
 
 # # Load the DataFrames
-# mapped_df = pd.read_pickle('path/to/mapped_df.pkl')
-# game_similarity_df = pd.read_pickle('path/to/game_similarity_df.pkl')
+mapped_df = pd.read_pickle('./mapped_df.pkl')
+game_similarity_df = pd.read_pickle('./game_similarity_df.pkl')
 
 # # Example Usage
 # def recommend_games(request):
