@@ -100,7 +100,7 @@ const GameRecommendationForm = () => {
             placeholder="Search for games..."
             value={searchQuery}
             onChange={handleSearchChange} // Using the onChange handler with debounce
-            className="flex-grow h-full p-2 text-lg border bg-gray-800 border-primary rounded-l-md focus:outline-none focus:ring-1 focus:ring-accent"
+            className="flex-grow h-full p-2 text-lg border bg-gray-800 border-primary rounded-l-md focus:outline-accent"
           />
           <button
             onClick={handleSearch}

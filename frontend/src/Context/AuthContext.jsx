@@ -6,10 +6,12 @@ import {
   fetchUser as apiFetchUser,
   apiRefreshToken
 } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -22,13 +24,16 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await apiLogin(formData);
       console.log(res)
+      if(res.status === 200){
+        await getUser();
+      }
       // setUser(res.data.user); // Set the user after successful login
-      localStorage.setItem("userStatus", true);
-      setIsAuthChecked(true);
+      // localStorage.setItem("userStatus", true);
+      // setIsAuthChecked(true);
+      navigate("/");
     } catch (error) {
-      console.log(error);
       
-      setError(error.response?.data?.message || error.message);
+      setError("username or password incorrect");
       console.error("Login failed", error);
     } finally {
       setLoading(false);

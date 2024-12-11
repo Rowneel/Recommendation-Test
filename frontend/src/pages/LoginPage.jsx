@@ -4,12 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function LoginPage() {
-  const { login ,loading } = useAuth();
+  const { login ,loading, error } = useAuth();
   const navigate = useNavigate();
   const [input, setInput] = useState(""); // username or email
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
 
   const isValidEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -20,47 +20,41 @@ function LoginPage() {
     setShowPassword(!showPassword);
   };
   //handle login
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setError(""); // Reset error state
-
-    // Check if either input (email/username) or password is empty
+    setFormError(""); // Reset error state before validation
+    // Check if either email/username or password is empty
     if (!input || !password) {
-      setError("Both fields are required!");
+      setFormError("Both fields are required!");
       return;
     }
-
+  
     // Determine if the input is a valid email or username
     let loginData = {};
-
+  
     if (isValidEmail(input)) {
       // If it's a valid email, send email in the request body
-      loginData = { email: input ,password: password };
+      loginData = { email: input, password: password };
     } else {
       // Otherwise, treat it as a username
-      loginData = { username: input ,password: password};
+      loginData = { username: input, password: password };
     }
-
-    try {
-      // Send the request to login using the correct data structure
-      await login(loginData);
-      setInput("");
-      setPassword("");
-      navigate("/");
-    } catch (err) {
-      // Handle error from login (e.g., incorrect credentials)
-      setError("Login failed. Please check your credentials.");
-    }
+  
+    login(loginData);
   };
  
   return (
     <div className="flex justify-center items-center min-h-screen bg-background dark:text-white">
+      
       {loading && <div className="dark:text-white">Loading...</div>}
       <div className="w-full max-w-sm p-8 bg-background rounded-lg border-2 border-primary">
         <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
 
         {error && (
           <div className="text-red-500 text-sm text-center mb-4">{error}</div>
+        )}
+        {formError && (
+          <div className="text-red-500 text-sm text-center mb-4">{formError}</div>
         )}
 
         <form onSubmit={handleSubmit}>
@@ -117,7 +111,7 @@ function LoginPage() {
         <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
           <p>
             Don't have an account?{" "}
-            <Link to={'/register'} className="text-primary hover:text-accent">
+            <Link to={'/signup'} className="text-primary hover:text-accent">
               Sign up
             </Link>
           </p>
