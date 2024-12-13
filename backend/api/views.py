@@ -200,14 +200,23 @@ def get_UserLibrary(request):
 @permission_classes([IsAuthenticated])
 def post_UserLibrary(request):
     user = request.user
-    app_id = request.data.get("app_id")
-    if app_id:
-        # Check if this app_id is already in the user's library
-        if not UserLibrary.objects.filter(user=user, app_id=app_id).exists():
-            UserLibrary.objects.create(user=user, app_id=app_id)
-            return Response({"message": "Game added to library."}, status=status.HTTP_201_CREATED)
-        return Response({"error": "Game already in library."}, status=status.HTTP_400_BAD_REQUEST)
-    return Response({"error": "app_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+    app_ids = request.data.get("app_id",[])
+    if not isinstance(app_ids,list):
+        app_ids = [app_ids]
+    if not app_ids:
+        return Response({"error": "List of app IDs required."}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        existing_app_ids = UserLibrary.objects.filter(user=user,app_id__in=app_ids).values_list("app_id",flat=True)
+        new_app_ids = [app_id for app_id in app_ids if app_id not in existing_app_ids]
+        if new_app_ids:
+            # for app_id in new_app_ids:
+            #     UserLibrary.objects.create(user=user,app_id=app_id)
+            UserLibrary.objects.bulk_create([UserLibrary(user=user,app_id=app_id) for app_id in new_app_ids])
+            return Response({"message": f"{len(new_app_ids)} game(s) added to library.", "added_app_ids": new_app_ids},status=status.HTTP_201_CREATED)
+        return Response({"error":"All games are already in the library"})
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 
@@ -236,10 +245,10 @@ def api_suggestions(request):
         return JsonResponse([], safe=False)
     
     games_path = finders.find('src/final_dataset.csv') 
-    games = reduce_memory(pd.read_csv(games_path, usecols=["title"])) 
+    games = reduce_memory(pd.read_csv(games_path, usecols=["app_id","title"])) 
     games['title'] = games['title'].astype(str)
     
-    matches = pd.DataFrame(columns=["title"])
+    matches = pd.DataFrame(columns=["app_id","title"])
     if len(query) == 1:
         matches = games[games['title'].str[0].str.lower() == query[0].lower()]
     else:
@@ -251,7 +260,7 @@ def api_suggestions(request):
         if matches.empty or len(matches)<10:
             matches = games[games['title'].str.contains(fr'\b{query}', case=False, na=False)]
     
-    suggestions = matches.head(10)["title"].tolist()
+    suggestions = matches.head(10)[["app_id","title"]].to_dict(orient="records")
     return JsonResponse(suggestions, safe=False)
 
         
