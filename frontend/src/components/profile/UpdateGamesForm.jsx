@@ -1,9 +1,181 @@
-import React from 'react'
+import { React, useEffect, useState } from "react";
+import { IoMdAdd } from "react-icons/io";
+import { apiFetchSuggestions } from "../../services/recommendationService";
+import { FaTimes } from "react-icons/fa";
+import { apiUpdateLibrary, apiFetchLibrary } from "../../services/libraryService"; // Add API to get library
 
 function UpdateGamesForm() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [debounceTimeout, setDebounceTimeout] = useState(null);
+  const [selectedSuggestions, setSelectedSuggestions] = useState([]);
+  const [userLibrary, setUserLibrary] = useState([]); // State to hold the user's current library
+
+  const fetchSuggestions = async (query) => {
+    if (query.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+    setLoadingSuggestions(true);
+    try {
+      const response = await apiFetchSuggestions(query);
+      setSuggestions(response.data || []); // Assuming the response data contains the suggestions
+    } catch (error) {
+      console.error("Error fetching suggestions", error);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  const fetchUserLibrary = async () => {
+    try {
+      const response = await apiFetchLibrary(); // Fetch the user's current library
+      setUserLibrary(response.data.map(item => item.app_id) || []); // Assuming the response data contains the library games
+    } catch (error) {
+      console.error("Error fetching library", error);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    // Clear the previous timeout if it exists
+    if (debounceTimeout) {
+      clearTimeout(debounceTimeout);
+    }
+
+    // Set a new timeout to fetch suggestions after 300ms delay
+    const timeoutId = setTimeout(() => {
+      fetchSuggestions(query);
+    }, 300);
+
+    // Store the timeout ID to clear it later if necessary
+    setDebounceTimeout(timeoutId);
+  };
+
+  // Handle selecting a suggestion
+  const handleSuggestionSelect = (suggestion) => {
+    if (
+      !selectedSuggestions.find((item) => item.app_id === suggestion.app_id)
+    ) {
+      setSelectedSuggestions([...selectedSuggestions, suggestion]);
+    }
+    setSearchQuery(""); // Clear input after selection
+  };
+
+  // Handle removing a selected suggestion
+  const handleRemoveSuggestion = (suggestionToRemove) => {
+    setSelectedSuggestions(
+      selectedSuggestions.filter(
+        (suggestion) => suggestion.app_id !== suggestionToRemove.app_id
+      )
+    );
+  };
+
+  const handleAddToLibrary = async () => {
+    const appIds = selectedSuggestions.map((item) => item.app_id);
+    console.log(appIds);
+    const formData = {
+      app_id: appIds
+    }
+    try {
+      // Call API to update the library with selected games
+      const response = await apiUpdateLibrary(formData);
+      console.log(response);
+      
+      if (response.success) {
+        alert("Games added to your library successfully!");
+        // After adding, refresh the library list
+        fetchUserLibrary();
+      } else {
+        alert("Failed to add games to library");
+      }
+    } catch (error) {
+      console.error("Error adding to library:", error);
+      alert("An error occurred while adding to the library.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserLibrary(); // Fetch the user's library when the component mounts
+  }, []);
+
   return (
-    <div>UpdateGamesForm</div>
-  )
+    <div>
+      <div className="text-[20px] font-bold">Add Games To your Library</div>
+      <div className="relative flex items-center h-10 mt-4">
+        <input
+          type="text"
+          placeholder="Search for games to add to your library"
+          value={searchQuery}
+          onChange={handleSearchChange} // Using the onChange handler with debounce
+          className="flex-grow h-full p-2 text-lg border bg-gray-800 border-primary rounded-l-md focus:outline-accent"
+        />
+        <button
+          onClick={handleAddToLibrary}
+          className="h-full px-5 bg-primary text-black rounded-r-md hover:bg-accent flex items-center justify-center text-nowrap"
+        >
+          Add To Library
+        </button>
+
+        {/* Suggestion Dropdown */}
+        {searchQuery && !loadingSuggestions && suggestions.length > 0 && (
+          <ul className="absolute left-0 right-0 top-10 z-20 bg-gray-800 border border-gray-700 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
+            {suggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => handleSuggestionSelect(suggestion)}
+                className="px-4 py-2 cursor-pointer hover:bg-gray-600"
+              >
+                {suggestion.title}
+              </li>
+            ))}
+          </ul>
+        )}
+        {loadingSuggestions && (
+          <ul className="absolute left-0 right-0 top-10 z-20 bg-gray-800 border border-gray-700 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-600">
+              Loading...
+            </li>
+          </ul>
+        )}
+      </div>
+      {selectedSuggestions.length > 0 && <div className="mt-4">Add Following Games to Library:</div>}
+      <div className="flex  mt-2 gap-2">
+        {selectedSuggestions.map((suggestion, index) => (
+          <div
+            key={index}
+            className="flex items-center bg-gray-600 text-white px-3 py-1 rounded-md"
+          >
+            {suggestion.title}
+            <FaTimes
+              onClick={() => handleRemoveSuggestion(suggestion)}
+              className="ml-2 cursor-pointer"
+            />
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-6">
+        <div className="text-[20px] font-bold">Your Library:</div>
+        <div className="mt-2">
+          {userLibrary.length === 0 ? (
+            <p>No games in your library yet.</p>
+          ) : (
+            <ul>
+              {userLibrary.map((game, index) => (
+                <li key={index} className="flex items-center mt-2 bg-gray-700 text-white px-3 py-1 rounded-md">
+                  SteamID: {game}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
-export default UpdateGamesForm
+export default UpdateGamesForm;

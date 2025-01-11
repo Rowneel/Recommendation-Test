@@ -22,7 +22,8 @@ const GameRecommendationForm = () => {
     setLoadingSuggestions(true);
     try {
       const response = await apiFetchSuggestions(query);
-      setSuggestions(response.data || []); // Assuming the response data contains the suggestions
+      console.log(response)
+      setSuggestions(response.data.map(item => item.title) || []); // Assuming the response data contains the suggestions
     } catch (error) {
       console.error("Error fetching suggestions", error);
     } finally {
