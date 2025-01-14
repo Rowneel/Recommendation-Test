@@ -9,3 +9,8 @@ export const apiFetchLibrary = async () => {
     const response = await api.post(`/api/post_UserLibrary`, formData);
     return response;
   }
+  
+  export const apiDeleteLibrary = async (formData) => {
+    const response = await api.post(`/api/remove_UserLibrary`, formData);
+    return response;
+  }

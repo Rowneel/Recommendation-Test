@@ -2,7 +2,11 @@ import { React, useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { apiFetchSuggestions } from "../../services/recommendationService";
 import { FaTimes } from "react-icons/fa";
-import { apiUpdateLibrary, apiFetchLibrary } from "../../services/libraryService"; // Add API to get library
+import {
+  apiUpdateLibrary,
+  apiFetchLibrary,
+  apiDeleteLibrary
+} from "../../services/libraryService"; // Add API to get library
 
 function UpdateGamesForm() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,9 +35,13 @@ function UpdateGamesForm() {
   const fetchUserLibrary = async () => {
     try {
       const response = await apiFetchLibrary(); // Fetch the user's current library
-      setUserLibrary(response.data.map(item => item.app_id) || []); // Assuming the response data contains the library games
+      setUserLibrary(response.data.map((item) => item.app_id) || []); // Assuming the response data contains the library games
     } catch (error) {
-      console.error("Error fetching library", error);
+      if(error?.response?.data?.error === "User's library is empty.") {
+        setUserLibrary([]);
+      }else{
+        console.error("Error fetching library", error);
+      }
     }
   };
 
@@ -78,25 +86,55 @@ function UpdateGamesForm() {
     const appIds = selectedSuggestions.map((item) => item.app_id);
     console.log(appIds);
     const formData = {
-      app_id: appIds
-    }
+      app_id: appIds,
+    };
     try {
       // Call API to update the library with selected games
       const response = await apiUpdateLibrary(formData);
       console.log(response);
-      
-      if (response.success) {
-        alert("Games added to your library successfully!");
+
+      if (response.status === 201) {
+        // alert("Games added to your library successfully!");
         // After adding, refresh the library list
+        setSelectedSuggestions([]); // Clear selected suggestions
         fetchUserLibrary();
       } else {
         alert("Failed to add games to library");
       }
     } catch (error) {
       console.error("Error adding to library:", error);
-      alert("An error occurred while adding to the library.");
+      const errorMessage =
+        error.response?.data?.error || "An unexpected error occurred.";
+
+      if (errorMessage.startsWith("UNIQUE")) {
+        alert("Game already in library");
+      } else {
+        alert("An error occurred while adding to the library.");
+      }
     }
   };
+
+  const handleDelete = async (game) => {
+    const formData = {
+      app_id: game,
+    };
+    try {
+      // Call API to delete the game from the library
+      const response = await apiDeleteLibrary(formData);
+      console.log(response);
+
+      if (response.status === 200) {
+        // alert("Game removed from your library successfully!");
+        // After removing, refresh the library list
+        fetchUserLibrary();
+      } else {
+        alert("Failed to remove game from library");
+      }
+    } catch (error) {
+      console.error("Error removing from library:", error);
+      alert("An error occurred while removing from the library.");
+    }
+  }
 
   useEffect(() => {
     fetchUserLibrary(); // Fetch the user's library when the component mounts
@@ -142,7 +180,9 @@ function UpdateGamesForm() {
           </ul>
         )}
       </div>
-      {selectedSuggestions.length > 0 && <div className="mt-4">Add Following Games to Library:</div>}
+      {selectedSuggestions.length > 0 && (
+        <div className="mt-4">Add Following Games to Library:</div>
+      )}
       <div className="flex  mt-2 gap-2">
         {selectedSuggestions.map((suggestion, index) => (
           <div
@@ -166,8 +206,12 @@ function UpdateGamesForm() {
           ) : (
             <ul>
               {userLibrary.map((game, index) => (
-                <li key={index} className="flex items-center mt-2 bg-gray-700 text-white px-3 py-1 rounded-md">
+                <li
+                  key={index}
+                  className="flex items-center justify-between mt-2 bg-gray-700 text-white px-3 py-1 rounded-md"
+                >
                   SteamID: {game}
+                  <span className="text-red-500 hover:cursor-pointer" onClick={() => handleDelete(game)}>X</span>
                 </li>
               ))}
             </ul>

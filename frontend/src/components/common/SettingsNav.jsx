@@ -34,7 +34,7 @@ const SettingNav = () => {
 
       {/* Mobile Nav */}
       <div
-        className={`absolute top-0 w-1/2 sm:hidden transform transition-transform duration-300 ${
+        className={`absolute top-0 w-1/2 sm:hidden transform transition-transform duration-300 z-30 ${
           isSettingNavOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
