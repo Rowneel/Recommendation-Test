@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default (Retro) Theme */
+  --background: #000000; /* black */
+  --primary: #ffd700; /* gold */
+  --accent: #FF52AE; /* deep pink */
+  --text: #000000; /* light gray */
+}
+
+[data-theme="cyberpunk"] {
+  --background: #1a1a1a; /* very dark gray */
+  --primary: #FF57AB; /* magenta */
+  --accent: #00ffea; /* cyan */
+  --text: #000000; /* white */
+
+}
+
+*{
+    box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+}
+
