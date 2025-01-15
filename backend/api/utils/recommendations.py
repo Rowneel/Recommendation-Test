@@ -54,6 +54,33 @@ def get_recommendations(title, games, cosine_sim, n_recommendation=20):
     except IndexError:
         return []
     
+def get_personalized_recommendations(game_ids, games, cosine_sim, n_recommendation=10):
+
+    try:
+        games['app_id'] = games['app_id'].astype(str) 
+        # Get indices of games in the similarity matrix
+        indices = games[games['app_id'].isin(game_ids)].index
+        if not len(indices):
+            return []  # Return empty list if no games match
+        # Aggregate similarity scores across all games in the user's library
+        aggregated_similarity = sum(cosine_sim[index].toarray().flatten() for index in indices)
+        # Normalize scores
+        aggregated_similarity /= len(indices)
+        # Sort games by similarity scores
+        sim_scores = sorted(enumerate(aggregated_similarity), key=lambda x: x[1], reverse=True)
+        # Exclude games in the user's library
+        sim_scores = [score for score in sim_scores if games.iloc[score[0]]['app_id'] not in game_ids]
+        # Get the top N recommendations
+        sim_scores = sim_scores[:n_recommendation]
+        game_indices = [i[0] for i in sim_scores]
+        
+        return games['app_id'].iloc[game_indices].tolist()
+    except Exception as e:
+        print(f"Error in get_recommendations: {e}")
+        return []
+
+
+
 
 
 def get_vectors_from_cache():

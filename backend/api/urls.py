@@ -20,7 +20,9 @@ urlpatterns = [
     path('user',CustomUserView.as_view(),name="user"),
     path('update_avatar',views.update_avatar,name="update_avatar"),
     path('update_user',views.update_user,name="update_user"),
-    path('remove_UserLibrary',views.remove_UserLibrary,name="remove_UserLibrary")
+    path('remove_UserLibrary',views.remove_UserLibrary,name="remove_UserLibrary"),
+    path('personalized_recommendation',views.personalized_recommendation,name="personalized_recommendation"),
+    path('recommendation_rating/<str:game_name>',views.get_game_recommendations,name="recommendation_rating")
     
 
     # path('logout',views.logout),

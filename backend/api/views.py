@@ -11,7 +11,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import json
-from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache
+from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary,CustomUser
@@ -26,7 +26,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-
+#Authentication and Registration
 @api_view(['POST'])
 def register(request):
     username = request.data.get('username', "")
@@ -99,7 +99,7 @@ def update_user(request):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     
-#CODE WHILE USING CSV
+#Recommendations
 @api_view(['GET'])
 def getPopularGames(request):
     # gettign data from csv file
@@ -168,6 +168,52 @@ def recommendation_by_title(request,title):
 
 
 @api_view(['GET'])
+def personalized_recommendation(request):
+    user = request.user
+    library = UserLibrary.objects.filter(user=user)
+    if library.exists():
+        game_ids = library.values_list('app_id',flat=True)
+        games = preprocess_title('src/games_preprocessed_with_tags_porterstemmer.csv')
+        cosine_sim = load_matrix('src/vectors_for_title.pkl')
+        # serializer = UserLibrarySerializer(library, many=True)
+        if not game_ids:
+            return JsonResponse({'error': 'No games in library'}, status=400)
+    
+        recommendations = get_personalized_recommendations(list(game_ids), games, cosine_sim)
+    # return JsonResponse({'recommendations': recommendations})
+    return Response(recommendations)
+
+@api_view(['GET'])
+def get_game_recommendations(request,game_name):
+    n=10
+    game_similarity_df = pd.read_pickle(finders.find('src/game_similarity_df.pkl'))
+    mapped_df = pd.read_pickle(finders.find('src/mapped_df.pkl'))
+    # Check if the game name exists in the filtered_df_player_count
+    if game_name not in mapped_df['title'].values:
+        return "No recommendations"
+    
+    # Get the app_id of the input game
+    app_id = mapped_df.loc[mapped_df['title'] == game_name, 'app_id'].values[0]
+    
+    # Check if the app_id is in the similarity matrix
+    if app_id not in game_similarity_df.index:
+        return "No recommendations"
+    
+    # Get similarity scores for the game and sort them in descending order
+    similarity_scores = game_similarity_df.loc[app_id].sort_values(ascending=False)
+    
+    # Get top n similar app_ids (excluding the game itself)
+    top_app_ids = similarity_scores.iloc[1:n+1].index  # Exclude the first as it's the game itself
+    
+    # Map app_ids to game titles
+    recommendations = mapped_df[mapped_df['app_id'].isin(top_app_ids)]['app_id'].tolist()
+    
+    return Response(recommendations)
+
+# print(get_game_recommendations('Dota 2', 5, game_similarity_df, mapped_df))
+# # Output: ['Game B', 'Game C']
+
+@api_view(['GET'])
 def app_details_view(request, app_id):
     steam_api_url = f'https://store.steampowered.com/api/appdetails?appids={app_id}'
     
@@ -183,7 +229,7 @@ def app_details_view(request, app_id):
     except requests.RequestException as e:
         return JsonResponse({"error": str(e)}, status=500)
     
-
+#User Library
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_UserLibrary(request):
@@ -236,7 +282,7 @@ def remove_UserLibrary(request):
         return Response({"error": "Game is not in the library."}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+#auto suggest api
 @api_view(['GET'])
 def api_suggestions(request):
     query = request.GET.get('q', '').strip()
