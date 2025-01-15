@@ -17,6 +17,7 @@ import MiscellaneousSetting from "./components/profile/MiscellaneousSetting";
 import { AuthProvider } from "./Context/AuthContext.jsx";
 import { RecommendationProvider } from "./Context/RecommendationContext.jsx";
 import GameInfoPage from "./pages/GameInfoPage.jsx";
+import PersonalRecommendations from "./pages/PersonalRecommendations.jsx";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -29,7 +30,7 @@ function App() {
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
               <Route path="/profile/:userId" element={<PublicProfilePage />} />
-              <Route path="game/:gameId" element={<GameInfoPage/>}/>
+              <Route path="game/:gameId" element={<GameInfoPage />} />
               <Route index element={<HomePage />} />
             </Route>
 
@@ -40,6 +41,9 @@ function App() {
                 <Route path="games" element={<UpdateGamesForm />} />
                 <Route path="misc" element={<MiscellaneousSetting />} />
               </Route>
+            </Route>
+            <Route path="/personalrecommendation" element={<PrivateRoute />}>
+              <Route index element={<PersonalRecommendations />} />
             </Route>
           </Routes>
         </RecommendationProvider>

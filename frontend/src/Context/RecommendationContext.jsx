@@ -4,6 +4,7 @@ import {
   apiFetchRecommendationsDesc,
   apiFetchRecommendationsTitle,
   apiFetchPopularGames,
+  apiFetchRecommendationsRating
 } from "../services/recommendationService";
 
 export const RecommendationContext = createContext();
@@ -111,6 +112,10 @@ export const RecommendationProvider = ({ children }) => {
         const res = await apiFetchRecommendationsTitle(searchQuery);
         gameIds = res.data;
       }
+      if(selectedMethod === "rating"){
+        const res = await apiFetchRecommendationsRating(searchQuery);
+        gameIds = res.data;
+      }
       // Fetch game details for search query
       await fetchGameDetails(gameIds);
     } catch (e) {
@@ -128,7 +133,6 @@ export const RecommendationProvider = ({ children }) => {
         error,
         popularGames,
         fetchRecommendations, // For searching
-        
       }}
     >
       {children}

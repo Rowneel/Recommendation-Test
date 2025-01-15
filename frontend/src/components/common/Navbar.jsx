@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 
 function Navbar() {
-  const { logout, isAuthChecked,user,sessionError } = useAuth();
+  const { logout, isAuthChecked, user, sessionError } = useAuth();
   const [isOpen, SetIsOpen] = useState(false);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ function Navbar() {
     SetIsOpen(!isOpen);
   };
   console.log(user);
-  
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -62,6 +62,17 @@ function Navbar() {
           <li className="hover:text-accent font-bold text-xl">
             <Link to={"/about-us"}>ABOUT US</Link>
           </li>
+          {isAuthChecked && !sessionError && (
+            <>
+              <li className="hover:text-accent font-bold text-xl">
+                <Link to={"/personalrecommendation"}>JUST FOR YOU</Link>
+              </li>
+              <li className="hover:text-accent font-bold text-xl">
+                <Link to={"/settings/games"}>YOUR LIBRARY</Link>
+              </li>
+            </>
+          )}
+
           {isAuthChecked && !sessionError ? (
             <div className="relative group">
               <button className="bg-gray-800 border-2 border-primary text-black p-3 rounded-full hover:opacity-50">
@@ -131,6 +142,26 @@ function Navbar() {
               About Us
             </Link>
           </li>
+          {isAuthChecked && !sessionError && (
+            <>
+              <li className="w-full text-center">
+                <Link
+                  to={"/personalrecommendation"}
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  Just For You
+                </Link>
+              </li>
+              <li className="w-full text-center">
+                <Link
+                  to={"/settings/games"}
+                  className="block w-full  py-4  hover:bg-accent hover:text-text"
+                >
+                  Your Library
+                </Link>
+              </li>
+            </>
+          )}
           {isAuthChecked && !sessionError ? (
             <>
               <li className="w-full text-center">

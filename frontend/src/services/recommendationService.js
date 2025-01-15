@@ -15,8 +15,18 @@ export const apiFetchRecommendationsTitle = async (title) =>{
   return response;
 }
 
+export const apiFetchRecommendationsRating = async (title) =>{
+  const response = await api.get(`/api/recommendation_rating/${title}`);
+  return response;
+}
+
 export const apiFetchPopularGames = async () => {
   const response = await api.get(`/api/popular_games`);
+  return response;
+}
+
+export const apiFetchPersonalRecommendations = async () => {
+  const response = await api.get(`/api/personalized_recommendation`);
   return response;
 }
 
