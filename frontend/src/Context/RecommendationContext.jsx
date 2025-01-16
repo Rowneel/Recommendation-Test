@@ -119,7 +119,7 @@ export const RecommendationProvider = ({ children }) => {
       // Fetch game details for search query
       await fetchGameDetails(gameIds);
     } catch (e) {
-      setError(`Error: ${e.message}`);
+      setError(`Error: ${e?.response?.data?.error || e.message}`);
     } finally {
       setLoading(false);
     }

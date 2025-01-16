@@ -4,9 +4,9 @@ import { RiCloseLargeLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 //API SERVICES
 import {
-    apiFetchGamesDetails,
-    apiFetchPersonalRecommendations
-  } from "../services/recommendationService";
+  apiFetchGamesDetails,
+  apiFetchPersonalRecommendations,
+} from "../services/recommendationService";
 
 const PersonalRecommendations = () => {
   const [selectedGenres, setSelectedGenres] = useState(new Set());
@@ -17,26 +17,7 @@ const PersonalRecommendations = () => {
   const isWindowWide = window.innerWidth > 1024;
   const [isSidebarOpen, setIsSidebarOpen] = useState(isWindowWide);
   const [filterLoading, setFilterLoading] = useState(false);
-
-  // Example genres
-  const genres = [
-    "action",
-    "adventure",
-    "casual",
-    "strategy",
-    "rpg",
-    "sports",
-    "racing",
-    "shooter",
-    "simulation",
-    "massively multiplayer",
-    "arcade",
-    "action rpg",
-    "platformer",
-    "puzzle",
-    "sandbox",
-    "battle royale",
-  ];
+  const [genres, setGenres] = useState([]); // State to hold genres
 
   const handleGenreChange = (genre) => {
     const newSelectedGenres = new Set(selectedGenres);
@@ -60,13 +41,23 @@ const PersonalRecommendations = () => {
   };
 
   const filterGames = (gameList) => {
-    return gameList.filter(
-      (game) =>
-        appliedGenres.size === 0 ||
-        game.genres.some((genre) =>
-          appliedGenres.has(genre.description.toLowerCase())
+    return gameList.filter((game) => {
+      // If no genres are applied, include all games
+      if (appliedGenres.size === 0) return true;
+  
+      // Convert appliedGenres to an array for easier use with every
+      const appliedGenresArray = Array.from(appliedGenres);
+  
+      // Check if all applied genres are present in either genres or categories
+      return appliedGenresArray.every((filter) =>
+        (game.genres || []).some(
+          (genre) => genre.description.toLowerCase() === filter
+        ) ||
+        (game.categories || []).some(
+          (category) => category.description.toLowerCase() === filter
         )
-    );
+      );
+    });
   };
 
   const fetchPersonalRecommendations = async () => {
@@ -101,7 +92,9 @@ const PersonalRecommendations = () => {
 
       if (failedIds.length > 0) {
         const idsMessage = failedIds.join(",");
-        setError(`Game(s) for id(s) ${idsMessage} might be removed from Steam.`);
+        setError(
+          `Game(s) for id(s) ${idsMessage} might be removed from Steam.`
+        );
       }
 
       setPersonalGames(results.filter((game) => game !== null));
@@ -117,6 +110,19 @@ const PersonalRecommendations = () => {
   }, []);
 
   const filteredGames = filterGames(personalGames);
+
+  useEffect(() => {
+    const genreSet = new Set(
+      personalGames.flatMap((game) => [
+        ...game.genres.map((genre) => genre.description.toLowerCase()),
+        ...game.categories.map((category) =>
+          category.description.toLowerCase()
+        ),
+      ])
+    );
+
+    setGenres(Array.from(genreSet).sort());
+  }, [personalGames]);
 
   const renderLoadingSkeletons = () => {
     return (
@@ -139,7 +145,9 @@ const PersonalRecommendations = () => {
 
   return (
     <div className="flex flex-col sm:mx-10 mx-0 dark:text-white">
-        <h2 className="text-5xl text-center text-primary">Recommendations Based On Your Library</h2>
+      <h2 className="text-5xl text-center text-primary">
+        Recommendations Based On Your Library
+      </h2>
       <span
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         className="p-4 w-32 mt-5 flex items-center font-bold text-xl cursor-pointer hover:text-accent"
@@ -164,21 +172,23 @@ const PersonalRecommendations = () => {
           }`}
         >
           <h2 className="mb-4 text-lg font-bold">Filter by Genre</h2>
-          {genres.map((genre) => (
-            <div key={genre} className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                id={genre}
-                value={genre}
-                checked={selectedGenres.has(genre)}
-                onChange={() => handleGenreChange(genre)}
-                className="mr-2"
-              />
-              <label htmlFor={genre} className="dark:text-white">
-                {genre.charAt(0).toUpperCase() + genre.slice(1)}
-              </label>
-            </div>
-          ))}
+          <div className="h-96 overflow-y-scroll scrollbar-thin scrollbar-thumb-accent scrollbar-track-gray-800">
+            {genres.map((genre) => (
+              <div key={genre} className="flex items-center mb-2">
+                <input
+                  type="checkbox"
+                  id={genre}
+                  value={genre}
+                  checked={selectedGenres.has(genre)}
+                  onChange={() => handleGenreChange(genre)}
+                  className="mr-2"
+                />
+                <label htmlFor={genre} className="dark:text-white">
+                  {genre.charAt(0).toUpperCase() + genre.slice(1)}
+                </label>
+              </div>
+            ))}
+          </div>
           <div className="flex gap-4">
             <button
               onClick={resetGenres}

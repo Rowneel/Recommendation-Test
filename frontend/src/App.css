@@ -1,0 +1,13 @@
+/* Custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 8px; /* Width of the vertical scrollbar */
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--primary); /* Thumb color */
+    border-radius: 10px; /* Rounded thumb */
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background-color: #2d3436; /* Track color */
+  }
