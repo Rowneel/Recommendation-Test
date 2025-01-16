@@ -11,18 +11,19 @@ const GameRecommendations = () => {
   const isWindowWide = window.innerWidth > 1024;
   const [isSidebarOpen, setIsSidebarOpen] = useState(isWindowWide);
   const [filterLoading, setFilterLoading] = useState(false);
+  const [genres, setGenres] = useState([]); // State to hold genres
 
   // Example genres
-  const genres = ["action", "adventure", "casual", "strategy", "rpg", "sports","racing",
-  "shooter",
-  "simulation",
-  "massively multiplayer",
-  "arcade",
-  "action rpg",
-  "platformer",
-  "puzzle",
-  "sandbox",
-  "battle royale"];
+  // const genres = ["action", "adventure", "casual", "strategy", "rpg", "sports","racing",
+  // "shooter",
+  // "simulation",
+  // "massively multiplayer",
+  // "arcade",
+  // "action rpg",
+  // "platformer",
+  // "puzzle",
+  // "sandbox",
+  // "battle royale"];
 
   // Handle genre selection
   const handleGenreChange = (genre) => {
@@ -48,20 +49,45 @@ const GameRecommendations = () => {
   };
 
   const filterGames = (gameList) => {
-    return gameList.filter(
-      (game) =>
-        appliedGenres.size === 0 ||
-        game.genres.some((genre) =>
-          appliedGenres.has(genre.description.toLowerCase())
-        )
-    );
+    return gameList.filter((game) => {
+      // If no genres are applied, include all games
+      if (appliedGenres.size === 0) return true;
+
+      // Convert appliedGenres to an array for easier use with every
+      const appliedGenresArray = Array.from(appliedGenres);
+
+      // Check if all applied genres are present in either genres or categories
+      return appliedGenresArray.every(
+        (filter) =>
+          (game.genres || []).some(
+            (genre) => genre.description.toLowerCase() === filter
+          ) ||
+          (game.categories || []).some(
+            (category) => category.description.toLowerCase() === filter
+          )
+      );
+    });
   };
 
   // Filter games based on applied genres
   const filteredGames = filterGames(games);
 
   const filteredPopularGames = filterGames(popularGames);
-  
+
+  useEffect(() => {
+    const availableGames = games.length > 0 ? games : popularGames;
+
+    const genreSet = new Set(
+      availableGames.flatMap((game) => [
+        ...game.genres.map((genre) => genre.description.toLowerCase()),
+        ...game.categories.map((category) =>
+          category.description.toLowerCase()
+        ),
+      ])
+    );
+
+    setGenres(Array.from(genreSet).sort());
+  }, [games, popularGames]);
 
   // Function to display loading skeletons
   const renderLoadingSkeletons = () => {
@@ -111,21 +137,23 @@ const GameRecommendations = () => {
           }`}
         >
           <h2 className="mb-4 text-lg font-bold">Filter by Genre</h2>
-          {genres.map((genre) => (
-            <div key={genre} className="flex items-center mb-2">
-              <input
-                type="checkbox"
-                id={genre}
-                value={genre}
-                checked={selectedGenres.has(genre)}
-                onChange={() => handleGenreChange(genre)}
-                className="mr-2"
-              />
-              <label htmlFor={genre} className="dark:text-white">
-                {genre.charAt(0).toUpperCase() + genre.slice(1)}
-              </label>
-            </div>
-          ))}
+          <div className="h-96 overflow-y-scroll scrollbar-thin scrollbar-thumb-accent scrollbar-track-gray-800">
+            {genres.map((genre) => (
+              <div key={genre} className="flex items-center mb-2">
+                <input
+                  type="checkbox"
+                  id={genre}
+                  value={genre}
+                  checked={selectedGenres.has(genre)}
+                  onChange={() => handleGenreChange(genre)}
+                  className="mr-2"
+                />
+                <label htmlFor={genre} className="dark:text-white">
+                  {genre.charAt(0).toUpperCase() + genre.slice(1)}
+                </label>
+              </div>
+            ))}
+          </div>
           <div className="flex gap-4">
             <button
               onClick={resetGenres}
@@ -157,17 +185,23 @@ const GameRecommendations = () => {
           {!loading &&
             !filterLoading &&
             games.length === 0 &&
-            filteredGames.length === 0 && filteredPopularGames.length === 0 && (
+            filteredGames.length === 0 &&
+            filteredPopularGames.length === 0 && (
               <p>No games found based on your filter criteria.</p>
             )}
-          {games.length === 0 && <div className="text-white">Popular Games:</div>}
+          {games.length === 0 && (
+            <div className="text-white">Popular Games:</div>
+          )}
 
           <div
             className={`grid gap-5 grid-cols-1 sm:grid-cols-2 ${
               isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
             }`}
           >
-            {(filteredGames.length > 0? filteredGames : filteredPopularGames).map((game) => (
+            {(filteredGames.length > 0
+              ? filteredGames
+              : filteredPopularGames
+            ).map((game) => (
               <Link to={`/game/${game.steam_appid}`} key={game.steam_appid}>
                 <div className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ">
                   <img

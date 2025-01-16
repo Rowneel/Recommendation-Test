@@ -190,14 +190,15 @@ def get_game_recommendations(request,game_name):
     mapped_df = pd.read_pickle(finders.find('src/mapped_df.pkl'))
     # Check if the game name exists in the filtered_df_player_count
     if game_name not in mapped_df['title'].values:
-        return "No recommendations"
+        return Response({"error": "The game lacks rating. Unable to find recommendations."}, status=status.HTTP_400_BAD_REQUEST)
+
     
     # Get the app_id of the input game
     app_id = mapped_df.loc[mapped_df['title'] == game_name, 'app_id'].values[0]
     
     # Check if the app_id is in the similarity matrix
     if app_id not in game_similarity_df.index:
-        return "No recommendations"
+        return Response({"error": "No similar games found/ Low rated game "}, status=status.HTTP_400_BAD_REQUEST)
     
     # Get similarity scores for the game and sort them in descending order
     similarity_scores = game_similarity_df.loc[app_id].sort_values(ascending=False)

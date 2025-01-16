@@ -32,7 +32,6 @@ export const AuthProvider = ({ children }) => {
       // setIsAuthChecked(true);
       navigate("/");
     } catch (error) {
-      
       setError("username or password incorrect");
       console.error("Login failed", error);
     } finally {
