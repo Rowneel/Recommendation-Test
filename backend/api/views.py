@@ -11,7 +11,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import json
-from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations
+from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations,get_vector_for_personalized_recommendation
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary,CustomUser
@@ -150,7 +150,7 @@ def recommendation_by_description(request,game):
     for i in recommended_indices[1:n_recommendation]:
         game_lists.append(games.iloc[i].app_id)
     # print(game_lists)
-    print(type(game_lists))
+
     return Response(game_lists)
 
 
@@ -174,7 +174,7 @@ def personalized_recommendation(request):
     if library.exists():
         game_ids = library.values_list('app_id',flat=True)
         games = preprocess_title('src/games_preprocessed_with_tags_porterstemmer.csv')
-        cosine_sim = load_matrix('src/vectors_for_title.pkl')
+        cosine_sim = get_vector_for_personalized_recommendation()
         # serializer = UserLibrarySerializer(library, many=True)
         if not game_ids:
             return JsonResponse({'error': 'No games in library'}, status=400)

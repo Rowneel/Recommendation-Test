@@ -92,3 +92,13 @@ def get_vectors_from_cache():
     return vectors
 
 
+
+
+def get_vector_for_personalized_recommendation():
+    vectors = cache.get('vector_for_personalized_recommendation')
+    if vectors is None:
+        vectors_final_pickle_path = finders.find('src/vectors_for_title.pkl')
+        vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
+        cache.set('vector_for_personalized_recommendation', vectors, timeout=3600)  # Cache for 1 hour
+    return vectors
+
