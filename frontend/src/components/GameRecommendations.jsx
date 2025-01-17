@@ -78,12 +78,16 @@ const GameRecommendations = () => {
     const availableGames = games.length > 0 ? games : popularGames;
 
     const genreSet = new Set(
-      availableGames.flatMap((game) => [
-        ...game.genres.map((genre) => genre.description.toLowerCase()),
-        ...game.categories.map((category) =>
-          category.description.toLowerCase()
-        ),
-      ])
+      (availableGames || [])
+        .flatMap((game) => [
+          ...(game.genres?.map(
+            (genre) => genre.description?.toLowerCase() || ""
+          ) || []),
+          ...(game.categories?.map(
+            (category) => category.description?.toLowerCase() || ""
+          ) || []),
+        ])
+        .filter(Boolean) // Removes empty strings
     );
 
     setGenres(Array.from(genreSet).sort());

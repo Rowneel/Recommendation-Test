@@ -44,18 +44,19 @@ const PersonalRecommendations = () => {
     return gameList.filter((game) => {
       // If no genres are applied, include all games
       if (appliedGenres.size === 0) return true;
-  
+
       // Convert appliedGenres to an array for easier use with every
       const appliedGenresArray = Array.from(appliedGenres);
-  
+
       // Check if all applied genres are present in either genres or categories
-      return appliedGenresArray.every((filter) =>
-        (game.genres || []).some(
-          (genre) => genre.description.toLowerCase() === filter
-        ) ||
-        (game.categories || []).some(
-          (category) => category.description.toLowerCase() === filter
-        )
+      return appliedGenresArray.every(
+        (filter) =>
+          (game.genres || []).some(
+            (genre) => genre.description.toLowerCase() === filter
+          ) ||
+          (game.categories || []).some(
+            (category) => category.description.toLowerCase() === filter
+          )
       );
     });
   };
@@ -67,7 +68,11 @@ const PersonalRecommendations = () => {
       const response = await apiFetchPersonalRecommendations();
       await fetchGameDetailsPersonal(response?.data);
     } catch (error) {
-      setError("An error occurred while fetching popular games.");
+      console.log(error);
+
+      setError(
+        "Add Games to your Library to get Personalized Recommendations."
+      );
     } finally {
       setLoading(false);
     }
@@ -114,8 +119,8 @@ const PersonalRecommendations = () => {
   useEffect(() => {
     const genreSet = new Set(
       personalGames.flatMap((game) => [
-        ...game.genres.map((genre) => genre.description.toLowerCase()),
-        ...game.categories.map((category) =>
+        ...game.genres?.map((genre) => genre.description.toLowerCase()),
+        ...game.categories?.map((category) =>
           category.description.toLowerCase()
         ),
       ])
