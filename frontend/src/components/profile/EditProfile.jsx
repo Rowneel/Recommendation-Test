@@ -2,32 +2,31 @@ import React, { useState, useEffect } from "react";
 import ThemeSwitcher from "./ThemeSwitcher";
 import {
   changePassword as changePasswordApi,
-  uploadAvatar, updateProfile
+  uploadAvatar,
+  updateProfile,
 } from "../../services/authService";
 import useAuth from "../../hooks/useAuth";
 
 function EditProfile() {
-  const {user,getUser} = useAuth();
+  const { user, getUser } = useAuth();
   const [profileData, setProfileData] = useState({
     username: "",
-    first_name:"",
-    last_name: ""
+    first_name: "",
+    last_name: "",
   });
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState("");
   const [avatar, setAvatar] = useState(null);
 
-
   useEffect(() => {
     // Set profile data to current user
     setProfileData({
       username: user?.username || "",
       first_name: user?.first_name || "",
-      last_name: user?.last_name || ""
+      last_name: user?.last_name || "",
     });
   }, [user]);
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +36,7 @@ function EditProfile() {
     }));
   };
   console.log(profileData);
-  
+
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     if (name === "newPassword") {
@@ -101,25 +100,28 @@ function EditProfile() {
     e.preventDefault();
     setErrors("");
     console.log(profileData);
-    
+
     // Handle profile data submission (e.g., username, first name, last name)
     try {
       // Assuming you have an API endpoint to update the profile (you'll need to implement it)
-      const res = await updateProfile(profileData)
-      if(res.status === 200) {
+      const res = await updateProfile(profileData);
+      if (res.status === 200) {
         getUser();
       }
     } catch (error) {
       console.error(error.response.data);
-      setErrors(error.response?.data?.detail || "An error occurred while updating the profile.");
+      setErrors(
+        error.response?.data?.detail ||
+          "An error occurred while updating the profile."
+      );
     }
-  }
+  };
 
   return (
     <div className="lg:px-20 md:px-16 px-5">
       <div className="text-white text-[20px] font-bold">Update Profile</div>
 
-      <div className="flex gap-5 mt-5 flex-col md:flex-col lg:flex-row">
+      <div className="flex gap-5 mt-5 flex-col md:flex-col lg:flex-row text-[20px]">
         <div className="flex flex-col gap-5 md:w-full lg:w-1/2">
           <div className="border-2 border-primary border-dashed p-5">
             <form onSubmit={handleProfileUpdate} className="">
@@ -132,7 +134,7 @@ function EditProfile() {
                   name="username"
                   value={profileData.username}
                   onChange={handleInputChange}
-                  className="min-w-10 bg-slate-500 p-1 rounded-md focus:outline-accent"
+                  className="min-w-10 p-1 border text-black bg-white border-gray-300 rounded-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
                 />
               </div>
 
@@ -145,7 +147,7 @@ function EditProfile() {
                   name="first_name"
                   value={profileData.first_name}
                   onChange={handleInputChange}
-                  className="min-w-10 bg-slate-500 p-1 rounded-md focus:outline-accent"
+                  className="min-w-10 p-1 border text-black bg-white border-gray-300 rounded-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
                 />
               </div>
 
@@ -158,7 +160,7 @@ function EditProfile() {
                   name="last_name"
                   value={profileData.last_name}
                   onChange={handleInputChange}
-                  className="min-w-10 bg-slate-500 p-1 rounded-md focus:outline-accent"
+                  className="min-w-10 p-1 border text-black bg-white border-gray-300 rounded-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
                 />
               </div>
 
@@ -173,7 +175,7 @@ function EditProfile() {
 
               {/* Submit Button */}
               <div className="p-2 flex justify-between">
-                <button type="submit" className="bg-accent text-black p-2">
+                <button type="submit" className="bg-accent text-text p-2">
                   Update Profile
                 </button>
               </div>
@@ -190,7 +192,7 @@ function EditProfile() {
                   name="newPassword"
                   value={newPassword}
                   onChange={handlePasswordChange}
-                  className="min-w-10 bg-slate-500 p-1 rounded-md focus:outline-accent"
+                  className="min-w-10 p-1 border text-black bg-white border-gray-300 rounded-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
                 />
               </div>
               <div className="p-2 flex justify-between">
@@ -201,7 +203,7 @@ function EditProfile() {
                   name="confirmPassword"
                   value={confirmPassword}
                   onChange={handlePasswordChange}
-                  className="min-w-10 bg-slate-500 p-1 rounded-md focus:outline-accent"
+                  className="min-w-10 p-1 border text-black bg-white border-gray-300 rounded-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
                 />
               </div>
               {errors.length > 0 && (
@@ -212,7 +214,7 @@ function EditProfile() {
                 </div>
               )}
               <div className="p-2 flex justify-between">
-                <button type="submit" className="bg-accent text-black p-2">
+                <button type="submit" className="bg-accent text-text p-2">
                   Update Password
                 </button>
               </div>
@@ -233,14 +235,24 @@ function EditProfile() {
                 src={`http://127.0.0.1:8000${user?.avatar}`}
                 alt="Avatar Preview"
                 className="mt-3 h-24 w-24 object-cover block rounded-full"
+                onError={(e) => {
+                  e.target.onerror = null; // prevents infinite loop in case default fails
+                  e.target.src = "/default-avatar.jpg"; // fallback to default avatar
+                }}
               />
             )}
             <div className="ml-4">
               <div>Username: {user?.username}</div>
-              <div>{user?.first_name} {user?.last_name}</div>
+              <div>
+                {user?.first_name} {user?.last_name}
+              </div>
             </div>
           </div>
-          <form onSubmit={handleImageSubmit} encType="multipart/form-data" className="border-t-2 border-primary border-dashed mt-10 pt-5">
+          <form
+            onSubmit={handleImageSubmit}
+            encType="multipart/form-data"
+            className="border-t-2 border-primary border-dashed mt-10 pt-5"
+          >
             <label htmlFor="avatar" className="block mb-2">
               Upload Avatar
             </label>
@@ -249,14 +261,11 @@ function EditProfile() {
               id="avatar"
               name="avatar"
               onChange={handleImageChange}
-              className="overflow-hidden overflow-ellipsis text-nowrap w-full"
+              className="overflow-hidden w-full overflow-ellipsis text-nowrap flex-grow h-full p-2 text-lg border text-black bg-white border-gray-300 rounded-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
             />
 
             <div>
-              <button
-                type="submit"
-                className="mt-4 p-2 bg-blue-500 text-white rounded"
-              >
+              <button type="submit" className="mt-4 p-2 bg-accent text-text">
                 Upload
               </button>
             </div>

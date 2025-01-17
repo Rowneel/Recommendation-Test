@@ -5,7 +5,7 @@ const NavItem = ({ to, children }) => (
   <NavLink
     to={to}
     className={({ isActive, isPending }) =>
-      `px-5 py-2 block ${!isPending && isActive ? 'bg-gradient-to-r sm:bg-gradient-to-t from-primary from-0% to-background to-30%' : ''}`
+      `px-5 py-2 block hover:text-accent ${!isPending && isActive ? 'hover:text-accent bg-gradient-to-r sm:bg-gradient-to-t from-primary from-0% to-background to-30%' : ''}`
     }
   >
     {children}
@@ -26,7 +26,7 @@ const SettingNav = () => {
   return (
     <div className="relative">
       {/* Desktop Nav */}
-      <div className="lg:mx-36 md:mx-24 mx-4 text-xl sm:flex hidden">
+      <div className="lg:mx-36 md:mx-24 mx-4 text-xl sm:flex hidden dark:text-white text-black">
         <NavItem to="/settings/profile">Profile</NavItem>
         <NavItem to="/settings/games">Your Games</NavItem>
         <NavItem to="/settings/misc">Misc</NavItem>

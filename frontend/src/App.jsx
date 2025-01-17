@@ -18,6 +18,7 @@ import { AuthProvider } from "./Context/AuthContext.jsx";
 import { RecommendationProvider } from "./Context/RecommendationContext.jsx";
 import GameInfoPage from "./pages/GameInfoPage.jsx";
 import PersonalRecommendations from "./pages/PersonalRecommendations.jsx";
+import AboutUsPage from "./pages/AboutUsPage.jsx";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -31,6 +32,7 @@ function App() {
               <Route path="signup" element={<SignupPage />} />
               <Route path="/profile/:userId" element={<PublicProfilePage />} />
               <Route path="game/:gameId" element={<GameInfoPage />} />
+              <Route path="aboutus" element={<AboutUsPage />} />
               <Route index element={<HomePage />} />
             </Route>
 

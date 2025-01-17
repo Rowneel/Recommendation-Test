@@ -44,7 +44,7 @@ function LoginPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background dark:text-white">
+    <div className="flex justify-center items-center min-h-screen bg-background dark:text-white text-black">
       <div className="w-full max-w-sm p-8 bg-background rounded-lg border-2 border-primary">
         <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
 
@@ -65,7 +65,7 @@ function LoginPage() {
             <input
               type="text"
               id="input"
-              className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
               placeholder="Enter your username or email"
               value={input}
               onChange={(e) => setInput(e.target.value)}
@@ -80,7 +80,7 @@ function LoginPage() {
             <input
               type={`${showPassword ? "text" : "password"}`}
               id="password"
-              className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

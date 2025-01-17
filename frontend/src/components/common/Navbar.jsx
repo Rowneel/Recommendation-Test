@@ -44,7 +44,7 @@ function Navbar() {
   };
 
   return (
-    <nav className=" sticky top-0 flex justify-between items-center h-20 sm:px-16 px-8 bg-background z-20 dark:text-white">
+    <nav className=" sticky top-0 flex justify-between items-center h-20 sm:px-16 px-8 dark:bg-background bg-gray-200 z-50 dark:text-white">
       <div className="relative w-full lg:w-auto flex justify-between">
         <div className="pr-5 text-4xl">
           <Link to={"/"}>App Name</Link>
@@ -60,7 +60,7 @@ function Navbar() {
             <Link to={"/"}>HOME</Link>
           </li>
           <li className="hover:text-accent font-bold text-xl">
-            <Link to={"/about-us"}>ABOUT US</Link>
+            <Link to={"/aboutus"}>ABOUT US</Link>
           </li>
           {isAuthChecked && !sessionError && (
             <>
@@ -75,11 +75,19 @@ function Navbar() {
 
           {isAuthChecked && !sessionError ? (
             <div className="relative group">
-              <button className="bg-gray-800 border-2 border-primary text-black p-3 rounded-full hover:opacity-50">
-                <img src="/vite.svg" width={20} height={20} alt="" />
+              <button className="bg-gray-800 border-2 border-primary text-black rounded-full hover:opacity-50">
+                <img
+                  src={`http://127.0.0.1:8000${user?.avatar}`}
+                  alt=""
+                  onError={(e) => {
+                    e.target.onerror = null; // prevents infinite loop in case default fails
+                    e.target.src = "/default-avatar.jpg"; // fallback to default avatar
+                  }}
+                  className="w-12 object-cover rounded-full"
+                />
               </button>
 
-              <ul className="absolute right-0 bg-gray-800 border-2 border-primary rounded-lg shadow-lg z-50 invisible group-hover:visible">
+              <ul className="absolute right-0 dark:bg-gray-800 bg-gray-200 border-2 border-primary rounded-lg shadow-lg z-50 invisible group-hover:visible">
                 <li className="hover:bg-accent rounded-t-lg hover:text-text">
                   <Link to={`/profile/${user?.pk}`} className="block px-4 py-2">
                     My Profile
@@ -118,7 +126,7 @@ function Navbar() {
 
       <div
         ref={menuRef}
-        className={`absolute top-16 left-0 w-full  dark:bg-background dark:text-white text-black transform transition-transform duration-300 ${
+        className={`absolute top-16 left-0 w-full  dark:bg-background bg-white dark:text-white text-black transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } lg:hidden`}
       >
@@ -136,7 +144,7 @@ function Navbar() {
           </li>
           <li className="w-full text-center">
             <Link
-              to={"/about-us"}
+              to={"/aboutus"}
               className="block w-full  py-4  hover:bg-accent hover:text-text"
             >
               About Us

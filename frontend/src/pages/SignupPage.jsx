@@ -51,7 +51,7 @@ function SignupPage() {
 
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background dark:text-white">
+    <div className="flex justify-center items-center min-h-screen bg-background dark:text-white text-black">
       <div className="w-full sm:max-w-lg sm:mx-auto p-8 mx-4 bg-background rounded-lg border-2 border-primary">
         <h2 className="text-2xl font-semibold text-center mb-6 text-primary">Sign Up</h2>
 
@@ -68,7 +68,7 @@ function SignupPage() {
             <input
               type="text"
               id="username"
-              className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
               placeholder="Enter username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -83,7 +83,8 @@ function SignupPage() {
               <input
                 type="text"
                 id="firstname"
-                className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+
                 placeholder="Enter First Name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -97,7 +98,8 @@ function SignupPage() {
               <input
                 type="text"
                 id="lastname"
-                className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+                className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+
                 placeholder="Enter Lastname"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -112,7 +114,8 @@ function SignupPage() {
             <input
               type="email"
               id="email"
-              className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -127,7 +130,8 @@ function SignupPage() {
             <input
               type={`${showPassword ? "text" : "password"}`}
               id="password"
-              className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -152,7 +156,8 @@ function SignupPage() {
             <input
               type={`${showConfirmPassword ? "text" : "password"}`}
               id="confirmPassword"
-              className="w-full p-3 mt-2 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+              className="w-full p-3 mt-2 dark:bg-gray-800 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-accent"
+
               placeholder="Confirm Your Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

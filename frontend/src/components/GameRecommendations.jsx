@@ -114,7 +114,7 @@ const GameRecommendations = () => {
   };
 
   return (
-    <div className="flex flex-col sm:mx-10 mx-0 dark:text-white">
+    <div className="flex flex-col sm:mx-10 mx-0 dark:text-white text-black">
       {/* Sidebar toggle button for small devices */}
       <span
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -136,7 +136,7 @@ const GameRecommendations = () => {
       {/* Sidebar for genre selection */}
       <div className="flex relative">
         <div
-          className={`absolute top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 bg-gray-800 sm:static sm:top-0 transform transition-transform duration-300 ${
+          className={`absolute z-40 top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 dark:bg-gray-800 bg-gray-300 sm:static sm:top-0 transform transition-transform duration-300 ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full hidden"
           }`}
         >
@@ -152,7 +152,7 @@ const GameRecommendations = () => {
                   onChange={() => handleGenreChange(genre)}
                   className="mr-2"
                 />
-                <label htmlFor={genre} className="dark:text-white">
+                <label htmlFor={genre} className="text-white">
                   {genre.charAt(0).toUpperCase() + genre.slice(1)}
                 </label>
               </div>
@@ -175,7 +175,7 @@ const GameRecommendations = () => {
         </div>
 
         {/* Main Content */}
-        <div className={`flex-1 px-4`}>
+        <div className={`flex-1 px-4 min-h-64`}>
           {error && (
             <div
               className="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
@@ -193,8 +193,8 @@ const GameRecommendations = () => {
             filteredPopularGames.length === 0 && (
               <p>No games found based on your filter criteria.</p>
             )}
-          {games.length === 0 && (
-            <div className="text-white">Popular Games:</div>
+          {games.length === 0 && !(filteredPopularGames.length === 0) && (
+            <div className="dark:text-white textt-black">Popular Games:</div>
           )}
 
           <div

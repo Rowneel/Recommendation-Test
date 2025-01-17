@@ -5,7 +5,7 @@ import { FaTimes } from "react-icons/fa";
 import {
   apiUpdateLibrary,
   apiFetchLibrary,
-  apiDeleteLibrary
+  apiDeleteLibrary,
 } from "../../services/libraryService"; // Add API to get library
 
 function UpdateGamesForm() {
@@ -37,9 +37,9 @@ function UpdateGamesForm() {
       const response = await apiFetchLibrary(); // Fetch the user's current library
       setUserLibrary(response.data.map((item) => item.app_id) || []); // Assuming the response data contains the library games
     } catch (error) {
-      if(error?.response?.data?.error === "User's library is empty.") {
+      if (error?.response?.data?.error === "User's library is empty.") {
         setUserLibrary([]);
-      }else{
+      } else {
         console.error("Error fetching library", error);
       }
     }
@@ -134,7 +134,7 @@ function UpdateGamesForm() {
       console.error("Error removing from library:", error);
       alert("An error occurred while removing from the library.");
     }
-  }
+  };
 
   useEffect(() => {
     fetchUserLibrary(); // Fetch the user's library when the component mounts
@@ -149,23 +149,23 @@ function UpdateGamesForm() {
           placeholder="Search for games to add to your library"
           value={searchQuery}
           onChange={handleSearchChange} // Using the onChange handler with debounce
-          className="flex-grow h-full p-2 text-lg border bg-gray-800 border-primary rounded-l-md focus:outline-accent"
+          className="flex-grow h-full p-2 text-lg border text-black bg-white border-gray-300 rounded-l-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
         />
         <button
           onClick={handleAddToLibrary}
-          className="h-full px-5 bg-primary text-black rounded-r-md hover:bg-accent flex items-center justify-center text-nowrap"
+          className="h-full px-5 bg-primary text-text rounded-r-md hover:bg-accent flex items-center justify-center text-nowrap"
         >
           Add To Library
         </button>
 
         {/* Suggestion Dropdown */}
         {searchQuery && !loadingSuggestions && suggestions.length > 0 && (
-          <ul className="absolute left-0 right-0 top-10 z-20 bg-gray-800 border border-gray-700 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
+          <ul className="absolute left-0 right-0 top-10 z-20 dark:text-gray-300 text-black bg-white border border-gray-300 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
             {suggestions.map((suggestion, index) => (
               <li
                 key={index}
                 onClick={() => handleSuggestionSelect(suggestion)}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-600"
+                className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
               >
                 {suggestion.title}
               </li>
@@ -173,8 +173,8 @@ function UpdateGamesForm() {
           </ul>
         )}
         {loadingSuggestions && (
-          <ul className="absolute left-0 right-0 top-10 z-20 bg-gray-800 border border-gray-700 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
-            <li className="px-4 py-2 cursor-pointer hover:bg-gray-600">
+          <ul className="absolute left-0 right-0 top-10 z-20 dark:text-white text-black bg-white border border-gray-300 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
+            <li className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
               Loading...
             </li>
           </ul>
@@ -208,10 +208,15 @@ function UpdateGamesForm() {
               {userLibrary.map((game, index) => (
                 <li
                   key={index}
-                  className="flex items-center justify-between mt-2 bg-gray-700 text-white px-3 py-1 rounded-md"
+                  className="flex items-center justify-between mt-2 dark:bg-gray-700 bg-gray-200 text-black dark:text-white px-3 py-1 rounded-md"
                 >
                   SteamID: {game}
-                  <span className="text-red-500 hover:cursor-pointer" onClick={() => handleDelete(game)}>X</span>
+                  <span
+                    className="text-red-500 hover:cursor-pointer"
+                    onClick={() => handleDelete(game)}
+                  >
+                    X
+                  </span>
                 </li>
               ))}
             </ul>

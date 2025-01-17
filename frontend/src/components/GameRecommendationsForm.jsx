@@ -22,8 +22,8 @@ const GameRecommendationForm = () => {
     setLoadingSuggestions(true);
     try {
       const response = await apiFetchSuggestions(query);
-      console.log(response)
-      setSuggestions(response.data.map(item => item.title) || []); // Assuming the response data contains the suggestions
+      console.log(response);
+      setSuggestions(response.data.map((item) => item.title) || []); // Assuming the response data contains the suggestions
     } catch (error) {
       console.error("Error fetching suggestions", error);
     } finally {
@@ -101,22 +101,23 @@ const GameRecommendationForm = () => {
             placeholder="Search for games..."
             value={searchQuery}
             onChange={handleSearchChange} // Using the onChange handler with debounce
-            className="flex-grow h-full p-2 text-lg border bg-gray-800 border-primary rounded-l-md focus:outline-accent"
+            className="flex-grow h-full p-2 text-lg border text-black bg-white border-gray-300 rounded-l-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
           />
           <button
             onClick={handleSearch}
-            className="h-full px-5 bg-primary text-black rounded-r-md hover:bg-accent flex items-center justify-center "
+            className="h-full px-5 bg-primary text-black rounded-r-md hover:bg-accent flex items-center justify-center dark:text-text dark:hover:bg-accent"
           >
             <FaSearch />
           </button>
+
           {/* Suggestion Dropdown */}
           {searchQuery && !loadingSuggestions && suggestions.length > 0 && (
-            <ul className="absolute left-0 right-0 top-10 z-20 bg-gray-800 border border-gray-700 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
+            <ul className="absolute left-0 right-0 top-10 z-20 dark:text-gray-300 text-black bg-white border border-gray-300 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
                   onClick={() => handleSuggestionSelect(suggestion)}
-                  className="px-4 py-2 cursor-pointer hover:bg-gray-600"
+                  className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
                 >
                   {suggestion}
                 </li>
@@ -124,13 +125,11 @@ const GameRecommendationForm = () => {
             </ul>
           )}
           {loadingSuggestions && (
-            <ul className="absolute left-0 right-0 top-10 z-20 bg-gray-800 border border-gray-700 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto">
-              <li
-                className="px-4 py-2 cursor-pointer hover:bg-gray-600"
-              >
+            <ul className="absolute left-0 right-0 top-10 z-20 dark:text-white text-black bg-white border border-gray-300 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
+              <li className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
                 Loading...
               </li>
-          </ul>
+            </ul>
           )}
         </div>
       )}

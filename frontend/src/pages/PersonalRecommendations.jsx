@@ -7,6 +7,7 @@ import {
   apiFetchGamesDetails,
   apiFetchPersonalRecommendations,
 } from "../services/recommendationService";
+import Footer from "../components/common/Footer";
 
 const PersonalRecommendations = () => {
   const [selectedGenres, setSelectedGenres] = useState(new Set());
@@ -135,7 +136,7 @@ const PersonalRecommendations = () => {
         {[...Array(8)].map((_, index) => (
           <div
             key={index}
-            className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 animate-pulse"
+            className="rounded-lg shadow  bg-gray-800 dark:border-gray-700 animate-pulse"
           >
             <div className="w-full h-48 bg-gray-300 dark:bg-gray-700 rounded-t-lg" />
             <div className="p-5">
@@ -149,7 +150,7 @@ const PersonalRecommendations = () => {
   };
 
   return (
-    <div className="flex flex-col sm:mx-10 mx-0 dark:text-white">
+    <div className="flex flex-col sm:mx-10 mx-0 text-white">
       <h2 className="text-5xl text-center text-primary">
         Recommendations Based On Your Library
       </h2>
@@ -172,7 +173,7 @@ const PersonalRecommendations = () => {
 
       <div className="flex relative">
         <div
-          className={`absolute top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 bg-gray-800 sm:static sm:top-0 transform transition-transform duration-300 ${
+          className={`absolute z-40 top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 dark:bg-gray-800 bg-gray-300  sm:static sm:top-0 transform transition-transform duration-300 ${
             isSidebarOpen ? "translate-x-0" : "-translate-x-full hidden"
           }`}
         >
@@ -188,7 +189,7 @@ const PersonalRecommendations = () => {
                   onChange={() => handleGenreChange(genre)}
                   className="mr-2"
                 />
-                <label htmlFor={genre} className="dark:text-white">
+                <label htmlFor={genre} className="text-white">
                   {genre.charAt(0).toUpperCase() + genre.slice(1)}
                 </label>
               </div>
@@ -251,6 +252,7 @@ const PersonalRecommendations = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };
