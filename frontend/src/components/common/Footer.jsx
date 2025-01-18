@@ -5,12 +5,12 @@ import useAuth from "../../hooks/useAuth";
 function Footer() {
   const { user } = useAuth();
   return (
-    <footer className="dark:bg-gray-800 bg-gray-300  dark:text-white text-black py-6 mt-10">
+    <footer className="dark:bg-gray-800 bg-gray-300 dark:text-white text-black py-6 mt-10 h-28">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Left Section */}
           <div className="mb-6 md:mb-0 text-center md:text-left">
-            <h2 className="text-lg font-semibold">Company Name</h2>
+            <h2 className="text-lg font-semibold">GRS</h2>
             <p className="text-gray-400">
               © {new Date().getFullYear()} All rights reserved.
             </p>

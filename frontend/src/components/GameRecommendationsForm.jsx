@@ -54,6 +54,19 @@ const GameRecommendationForm = () => {
     fetchRecommendations(searchQuery, selectedMethod);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      if (suggestions.length > 0) {
+        // Set the first suggestion as the search query
+        setSearchQuery(suggestions[0]);
+        fetchRecommendations(suggestions[0], selectedMethod);
+      } else {
+        fetchRecommendations(searchQuery, selectedMethod);
+      }
+      setSuggestions([]); // Clear the suggestions dropdown
+    }
+  };
+
   const handleMethodSelect = (method) => {
     setSelectedMethod(method);
   };
@@ -101,6 +114,7 @@ const GameRecommendationForm = () => {
             placeholder="Search for games..."
             value={searchQuery}
             onChange={handleSearchChange} // Using the onChange handler with debounce
+            onKeyDown={handleKeyDown}
             className="flex-grow h-full p-2 text-lg border text-black bg-white border-gray-300 rounded-l-md focus:outline-accent dark:bg-gray-800 dark:border-primary dark:text-white"
           />
           <button

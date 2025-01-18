@@ -6,6 +6,7 @@ import {
   updateProfile,
 } from "../../services/authService";
 import useAuth from "../../hooks/useAuth";
+import Footer from "../common/Footer";
 
 function EditProfile() {
   const { user, getUser } = useAuth();
@@ -118,6 +119,7 @@ function EditProfile() {
   };
 
   return (
+    <>
     <div className="lg:px-20 md:px-16 px-5">
       <div className="text-white text-[20px] font-bold">Update Profile</div>
 
@@ -273,6 +275,7 @@ function EditProfile() {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

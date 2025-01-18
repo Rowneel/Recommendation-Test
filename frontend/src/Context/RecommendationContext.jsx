@@ -18,7 +18,7 @@ export const RecommendationProvider = ({ children }) => {
 
   // Fetch popular games on component mount
   useEffect(() => {
-    // fetchPopularGames();
+    fetchPopularGames();
   }, []);
 
   // Fetch popular games

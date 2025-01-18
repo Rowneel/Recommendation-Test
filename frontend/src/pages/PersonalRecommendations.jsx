@@ -150,110 +150,112 @@ const PersonalRecommendations = () => {
   };
 
   return (
-    <div className="flex flex-col sm:mx-10 mx-0 text-white">
-      <h2 className="text-5xl text-center text-primary">
-        Recommendations Based On Your Library
-      </h2>
-      <span
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="p-4 w-32 mt-5 flex items-center font-bold text-xl cursor-pointer hover:text-accent"
-      >
-        {isSidebarOpen ? (
-          <>
-            <RiCloseLargeLine className="mr-2" />
-            Close
-          </>
-        ) : (
-          <>
-            <FaFilter className="mr-2" />
-            Filter
-          </>
-        )}
-      </span>
-
-      <div className="flex relative">
-        <div
-          className={`absolute z-40 top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 dark:bg-gray-800 bg-gray-300  sm:static sm:top-0 transform transition-transform duration-300 ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full hidden"
-          }`}
+    <>
+      <div className="flex flex-col sm:mx-10 mx-0 text-white">
+        <h2 className="text-5xl text-center text-primary">
+          Recommendations Based On Your Library
+        </h2>
+        <span
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="p-4 w-32 mt-5 flex items-center font-bold text-xl cursor-pointer hover:text-accent"
         >
-          <h2 className="mb-4 text-lg font-bold">Filter by Genre</h2>
-          <div className="h-96 overflow-y-scroll scrollbar-thin scrollbar-thumb-accent scrollbar-track-gray-800">
-            {genres.map((genre) => (
-              <div key={genre} className="flex items-center mb-2">
-                <input
-                  type="checkbox"
-                  id={genre}
-                  value={genre}
-                  checked={selectedGenres.has(genre)}
-                  onChange={() => handleGenreChange(genre)}
-                  className="mr-2"
-                />
-                <label htmlFor={genre} className="text-white">
-                  {genre.charAt(0).toUpperCase() + genre.slice(1)}
-                </label>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-4">
-            <button
-              onClick={resetGenres}
-              className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
-            >
-              Reset
-            </button>
-            <button
-              onClick={applyFilters}
-              className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
-            >
-              Apply
-            </button>
-          </div>
-        </div>
-
-        <div className={`flex-1 px-4`}>
-          {error && (
-            <div
-              className="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
-              role="alert"
-            >
-              <span className="font-medium">{error}</span>
-            </div>
+          {isSidebarOpen ? (
+            <>
+              <RiCloseLargeLine className="mr-2" />
+              Close
+            </>
+          ) : (
+            <>
+              <FaFilter className="mr-2" />
+              Filter
+            </>
           )}
-          {loading || filterLoading ? renderLoadingSkeletons() : null}
-          {!loading && !filterLoading && filteredGames.length === 0 && (
-            <p>No games found based on your filter criteria.</p>
-          )}
+        </span>
 
+        <div className="flex relative">
           <div
-            className={`grid gap-5 grid-cols-1 sm:grid-cols-2 ${
-              isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
+            className={`absolute z-40 top-0 w-1/2 sm:w-60 rounded-lg p-4 ml-4 dark:bg-gray-800 bg-gray-300  sm:static sm:top-0 transform transition-transform duration-300 ${
+              isSidebarOpen ? "translate-x-0" : "-translate-x-full hidden"
             }`}
           >
-            {filteredGames.map((game) => (
-              <Link to={`/game/${game.steam_appid}`} key={game.steam_appid}>
-                <div className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ">
-                  <img
-                    className="rounded-t-lg w-full h-48 object-cover"
-                    src={game.header_image}
-                    alt={game.name}
+            <h2 className="mb-4 text-lg font-bold">Filter by Genre</h2>
+            <div className="h-96 overflow-y-scroll scrollbar-thin scrollbar-thumb-accent scrollbar-track-gray-800">
+              {genres.map((genre) => (
+                <div key={genre} className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id={genre}
+                    value={genre}
+                    checked={selectedGenres.has(genre)}
+                    onChange={() => handleGenreChange(genre)}
+                    className="mr-2"
                   />
-                  <div className="p-5">
-                    <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      {game.name}
-                    </h5>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
-                      {game.short_description}
-                    </p>
-                  </div>
+                  <label htmlFor={genre} className="text-white">
+                    {genre.charAt(0).toUpperCase() + genre.slice(1)}
+                  </label>
                 </div>
-              </Link>
-            ))}
+              ))}
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={resetGenres}
+                className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+              >
+                Reset
+              </button>
+              <button
+                onClick={applyFilters}
+                className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+
+          <div className={`flex-1 px-4`}>
+            {error && (
+              <div
+                className="p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50 dark:bg-gray-800 dark:text-blue-400"
+                role="alert"
+              >
+                <span className="font-medium">{error}</span>
+              </div>
+            )}
+            {loading || filterLoading ? renderLoadingSkeletons() : null}
+            {!loading && !filterLoading && filteredGames.length === 0 && (
+              <p>No games found based on your filter criteria.</p>
+            )}
+
+            <div
+              className={`grid gap-5 grid-cols-1 sm:grid-cols-2 ${
+                isSidebarOpen ? "lg:grid-cols-3" : "lg:grid-cols-4"
+              }`}
+            >
+              {filteredGames.map((game) => (
+                <Link to={`/game/${game.steam_appid}`} key={game.steam_appid}>
+                  <div className="rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 ">
+                    <img
+                      className="rounded-t-lg w-full h-48 object-cover"
+                      src={game.header_image}
+                      alt={game.name}
+                    />
+                    <div className="p-5">
+                      <h5 className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                        {game.name}
+                      </h5>
+                      <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-2">
+                        {game.short_description}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-      <Footer/>
-    </div>
+      <Footer />
+    </>
   );
 };
 

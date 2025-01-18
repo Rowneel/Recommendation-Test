@@ -47,7 +47,7 @@ function Navbar() {
     <nav className=" sticky top-0 flex justify-between items-center h-20 sm:px-16 px-8 dark:bg-background bg-gray-200 z-50 dark:text-white">
       <div className="relative w-full lg:w-auto flex justify-between">
         <div className="pr-5 text-4xl">
-          <Link to={"/"}>App Name</Link>
+          <Link to={"/"}>GRS</Link>
         </div>
         <button className="lg:hidden" onClick={toggleMenu}>
           {/* Menu icon toggles between hamburger and close */}

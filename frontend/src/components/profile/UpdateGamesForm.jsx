@@ -2,11 +2,13 @@ import { React, useEffect, useState } from "react";
 import { IoMdAdd } from "react-icons/io";
 import { apiFetchSuggestions } from "../../services/recommendationService";
 import { FaTimes } from "react-icons/fa";
+import { MdDeleteForever } from "react-icons/md";
 import {
   apiUpdateLibrary,
   apiFetchLibrary,
   apiDeleteLibrary,
 } from "../../services/libraryService"; // Add API to get library
+import { Link } from "react-router-dom";
 
 function UpdateGamesForm() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -208,15 +210,22 @@ function UpdateGamesForm() {
               {userLibrary.map((game, index) => (
                 <li
                   key={index}
-                  className="flex items-center justify-between mt-2 dark:bg-gray-700 bg-gray-200 text-black dark:text-white px-3 py-1 rounded-md"
+                  className="flex items-center justify-between mt-2 dark:bg-gray-700 bg-gray-200 text-black dark:text-white rounded-md h-20"
                 >
-                  SteamID: {game}
-                  <span
-                    className="text-red-500 hover:cursor-pointer"
-                    onClick={() => handleDelete(game)}
-                  >
-                    X
-                  </span>
+                  <Link to={`/game/${game}`} className="h-full">
+                    {/* SteamID: {game} */}
+                    <img
+                      src={`https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/${game}/header.jpg`}
+                      className="w-32 h-full rounded-l-md  object-cover"
+                      alt="game_img"
+                    />
+                  </Link>
+                    <div
+                      onClick={() => handleDelete(game)}
+                      className="bg-accent h-full flex items-center px-4 rounded-r-md hover:bg-red-500 hover:cursor-pointer text-black text-xl hover:text-white"
+                    >
+                      <MdDeleteForever />
+                    </div>
                 </li>
               ))}
             </ul>
