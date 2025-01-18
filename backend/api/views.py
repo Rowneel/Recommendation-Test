@@ -141,17 +141,20 @@ def recommendation_by_description(request,game):
     games = reduce_memory(pd.read_csv(games_path))
     n_recommendation = 20
     # similarity = get_similarity_from_cache()
-    index = games[games['title'] == game].index[0]
-    vectors = get_vectors_from_cache()
-    item_vector = vectors[index]
-    similarities = cosine_similarity(item_vector, vectors).flatten()
-    recommended_indices = similarities.argsort()[::-1]
-    game_lists=[]
-    for i in recommended_indices[1:n_recommendation]:
-        game_lists.append(games.iloc[i].app_id)
-    # print(game_lists)
+    try:
+        index = games[games['title'] == game].index[0]
+        vectors = get_vectors_from_cache()
+        item_vector = vectors[index]
+        similarities = cosine_similarity(item_vector, vectors).flatten()
+        recommended_indices = similarities.argsort()[::-1]
+        game_lists=[]
+        for i in recommended_indices[1:n_recommendation]:
+            game_lists.append(games.iloc[i].app_id)
+        # print(game_lists)
 
-    return Response(game_lists)
+        return Response(game_lists)
+    except IndexError:
+         return JsonResponse({'error': 'Cannot find the game specified'}, status=400)
 
 
 @api_view(['GET'])
