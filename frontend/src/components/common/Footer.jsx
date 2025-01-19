@@ -5,7 +5,7 @@ import useAuth from "../../hooks/useAuth";
 function Footer() {
   const { user } = useAuth();
   return (
-    <footer className="dark:bg-gray-800 bg-gray-300 dark:text-white text-black py-6 mt-10 h-28">
+    <footer className="dark:bg-gray-800 bg-gray-300 dark:text-white text-black py-6 mt-10 min-h-28">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           {/* Left Section */}
@@ -50,9 +50,7 @@ function Footer() {
           </div>
 
           {/* Right Section */}
-          <div className="flex justify-center md:justify-end space-x-4">
-            {/* Add social icons or other content here */}
-          </div>
+          <div className="flex justify-center md:justify-end space-x-4"></div>
         </div>
       </div>
     </footer>
