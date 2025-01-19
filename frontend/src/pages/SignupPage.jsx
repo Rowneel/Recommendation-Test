@@ -26,6 +26,16 @@ function SignupPage() {
     e.preventDefault();
     setError(""); // Reset error state
 
+    if(password.length < 6){
+      setError("Password must be at least 6 char long")
+      return;
+    }
+    let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+    if(!regex.test(password)){
+      setError("Password must contain at least one uppercase letter, one special symbol, and at least two numbers.")
+      return;
+    }
+
     if(password !== confirmPassword){
       setError("Passwords do not match.");
       return;
