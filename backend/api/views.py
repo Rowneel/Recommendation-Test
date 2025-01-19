@@ -136,7 +136,7 @@ def getPopularGames(request):
 
 
 @api_view(['GET'])
-def recommendation_by_description(request,game,n_recommendation = 5):
+def recommendation_by_description(request,game,n_recommendation = 20):
     games_path = finders.find('src/final_dataset.csv') 
     games = reduce_memory(pd.read_csv(games_path))
     
@@ -200,7 +200,9 @@ def get_game_recommendations(request,game_name):
     mapped_df = pd.read_pickle(finders.find('src/mapped_df.pkl'))
     # Check if the game name exists in the filtered_df_player_count
     if game_name not in mapped_df['title'].values:
-        return Response({"error": "The game lacks rating. Unable to find recommendations."}, status=status.HTTP_400_BAD_REQUEST)
+        # return Response({"error": "The game lacks rating. Unable to find recommendations."}, status=status.HTTP_400_BAD_REQUEST)
+        recommendations = recommendation_by_desc(game_name,20)
+        return Response(recommendations)
 
     
     # Get the app_id of the input game
