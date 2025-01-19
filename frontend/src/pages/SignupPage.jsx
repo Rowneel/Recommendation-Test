@@ -30,8 +30,11 @@ function SignupPage() {
       setError("Password must be at least 6 char long")
       return;
     }
-    let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+
+    let regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{6,15}$/;
     if(!regex.test(password)){
+      console.log("reached")
+
       setError("Password must contain at least one uppercase letter, one special symbol, and at least two numbers.")
       return;
     }
@@ -40,6 +43,7 @@ function SignupPage() {
       setError("Passwords do not match.");
       return;
     }
+    console.log("reached")
     const formData = {
       username: username,
       email: email,
@@ -55,6 +59,7 @@ function SignupPage() {
       }
     } catch (err) {
       // Handle error from login (e.g., incorrect credentials)
+      console.log(err)
       setError(err.response.data.error);
     }
   };

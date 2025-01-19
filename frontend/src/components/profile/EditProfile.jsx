@@ -63,7 +63,7 @@ function EditProfile() {
       return;
     }
     let regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{8,15}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&])[A-Za-z\d@.#$!%*?&]{6,15}$/;
     if (!regex.test(newPassword)) {
       setErrors(
         "Password must contain at least one uppercase letter, one special symbol, and at least two numbers."
