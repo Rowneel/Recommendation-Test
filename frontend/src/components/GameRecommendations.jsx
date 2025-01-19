@@ -34,12 +34,14 @@ const GameRecommendations = () => {
       newSelectedGenres.add(genre); // Select the genre
     }
     setSelectedGenres(newSelectedGenres);
+    setAppliedGenres(newSelectedGenres);
   };
 
   // Apply filters to update the filtered games
   const applyFilters = () => {
     setFilterLoading(true);
     setAppliedGenres(new Set(selectedGenres)); // Update applied genres
+
     setFilterLoading(false);
   };
 
@@ -161,16 +163,16 @@ const GameRecommendations = () => {
           <div className="flex gap-4">
             <button
               onClick={resetGenres}
-              className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+              className="mt-4 px-4 py-2 w-full bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
             >
               Reset
             </button>
-            <button
+            {/* <button
               onClick={applyFilters}
               className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
             >
               Apply
-            </button>
+            </button> */}
           </div>
         </div>
 

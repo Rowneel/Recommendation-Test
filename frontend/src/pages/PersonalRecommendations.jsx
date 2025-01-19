@@ -28,6 +28,7 @@ const PersonalRecommendations = () => {
       newSelectedGenres.add(genre);
     }
     setSelectedGenres(newSelectedGenres);
+    setAppliedGenres(newSelectedGenres);
   };
 
   const applyFilters = () => {
@@ -199,16 +200,16 @@ const PersonalRecommendations = () => {
             <div className="flex gap-4">
               <button
                 onClick={resetGenres}
-                className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
+                className="mt-4 px-4 py-2 w-full bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
               >
                 Reset
               </button>
-              <button
+              {/* <button
                 onClick={applyFilters}
                 className="mt-4 px-4 py-2 w-1/2 bg-primary text-text rounded hover:bg-accent text-xl font-extrabold"
               >
                 Apply
-              </button>
+              </button> */}
             </div>
           </div>
 
