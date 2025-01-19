@@ -11,7 +11,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import json
-from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations,get_vector_for_personalized_recommendation
+from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations,get_vector_for_personalized_recommendation,recommendation_by_desc
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary,CustomUser
@@ -136,10 +136,10 @@ def getPopularGames(request):
 
 
 @api_view(['GET'])
-def recommendation_by_description(request,game):
+def recommendation_by_description(request,game,n_recommendation = 5):
     games_path = finders.find('src/final_dataset.csv') 
     games = reduce_memory(pd.read_csv(games_path))
-    n_recommendation = 20
+    
     # similarity = get_similarity_from_cache()
     try:
         index = games[games['title'] == game].index[0]
@@ -174,17 +174,24 @@ def recommendation_by_title(request,title):
 def personalized_recommendation(request):
     user = request.user
     library = UserLibrary.objects.filter(user=user)
+    games_path = finders.find('src/final_dataset.csv') 
+    games = reduce_memory(pd.read_csv(games_path))
+    games['app_id'] = games['app_id'].astype(str)
+    recommendations_ids= []
     if library.exists():
-        game_ids = library.values_list('app_id',flat=True)
-        games = preprocess_title('src/games_preprocessed_with_tags_porterstemmer.csv')
-        cosine_sim = get_vector_for_personalized_recommendation()
-        # serializer = UserLibrarySerializer(library, many=True)
+        game_ids = list(library.values_list('app_id',flat=True))
+        print(game_ids)
+        for i in game_ids:
+            game_title_array = games.loc[games['app_id'] == i, 'title'].values
+            game_title = game_title_array[0]  # Extract the title as a string
+            recommendations = recommendation_by_desc(game_title,5)
+            for j in recommendations:
+                recommendations_ids.append(j)
+        print(recommendations_ids)
+        print(type(recommendations_ids[0]))
         if not game_ids:
             return JsonResponse({'error': 'No games in library'}, status=400)
-    
-        recommendations = get_personalized_recommendations(list(game_ids), games, cosine_sim)
-    # return JsonResponse({'recommendations': recommendations})
-    return Response(recommendations)
+    return Response(recommendations_ids)
 
 @api_view(['GET'])
 def get_game_recommendations(request,game_name):

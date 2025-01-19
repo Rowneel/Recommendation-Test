@@ -81,7 +81,24 @@ def get_personalized_recommendations(game_ids, games, cosine_sim, n_recommendati
         return []
 
 
-
+def recommendation_by_desc(game,n_recommendation = 20):
+    games_path = finders.find('src/final_dataset.csv') 
+    games = reduce_memory(pd.read_csv(games_path))
+    
+    # similarity = get_similarity_from_cache()
+    try:
+        index = games[games['title'] == game].index[0]
+        vectors_final_pickle_path = finders.find('src/vectors_final.pkl')
+        vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
+        item_vector = vectors[index]
+        similarities = cosine_similarity(item_vector, vectors).flatten()
+        recommended_indices = similarities.argsort()[::-1]
+        game_lists=[]
+        for i in recommended_indices[1:n_recommendation]:
+            game_lists.append(str(games.iloc[i].app_id))
+        return game_lists
+    except IndexError:
+         raise ValueError("Could not find game")
 
 
 def get_vectors_from_cache():
@@ -98,7 +115,7 @@ def get_vectors_from_cache():
 def get_vector_for_personalized_recommendation():
     vectors = cache.get('vector_for_personalized_recommendation')
     if vectors is None:
-        vectors_final_pickle_path = finders.find('src/vectors_for_title.pkl')
+        vectors_final_pickle_path = finders.find('src/vectors_final.pkl')
         vectors=pickle.load(open(vectors_final_pickle_path,'rb'))
         cache.set('vector_for_personalized_recommendation', vectors, timeout=3600)  # Cache for 1 hour
     return vectors
