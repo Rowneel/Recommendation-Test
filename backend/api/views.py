@@ -11,7 +11,7 @@ import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 import re
 import json
-from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations,get_vector_for_personalized_recommendation,recommendation_by_desc
+from .utils.recommendations import preprocess_title, load_matrix, get_recommendations,reduce_memory,get_vectors_from_cache,get_personalized_recommendations,get_vector_for_personalized_recommendation,recommendation_by_desc, preprocess_text, get_tfidf_vectorizer_from_cache
 from rest_framework import status
 # from api.models import Game,Recommendation
 from api.models import UserLibrary,CustomUser
@@ -24,6 +24,7 @@ from django.contrib.auth.models import User,auth
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
+import re
 
 
 #Authentication and Registration
@@ -142,16 +143,25 @@ def recommendation_by_description(request,game,n_recommendation = 20):
     
     # similarity = get_similarity_from_cache()
     try:
-        index = games[games['title'] == game].index[0]
         vectors = get_vectors_from_cache()
-        item_vector = vectors[index]
+        # Check if the input matches a game title
+        if game in games['title'].values:
+            index = games[games['title'] == game].index[0]
+            item_vector = vectors[index]
+        else:
+            # Preprocess the input text
+            processed_text = preprocess_text(game)
+            tfidfV = get_tfidf_vectorizer_from_cache()
+
+            # Treat processed input as a description and transform it to a vector
+            input_vector = tfidfV.transform([processed_text])
+            item_vector = input_vector.toarray()  #
         similarities = cosine_similarity(item_vector, vectors).flatten()
         recommended_indices = similarities.argsort()[::-1]
         game_lists=[]
         for i in recommended_indices[1:n_recommendation]:
             game_lists.append(games.iloc[i].app_id)
-        # print(game_lists)
-
+        print(game_lists)
         return Response(game_lists)
     except IndexError:
          return JsonResponse({'error': 'Cannot find the game specified'}, status=400)

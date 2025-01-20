@@ -9,6 +9,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from django.core.cache import cache
 from django.http import JsonResponse
+from nltk.stem import PorterStemmer
+stemmer = PorterStemmer()
 
 def reduce_memory(df):
     for col in df.columns:
@@ -109,6 +111,14 @@ def get_vectors_from_cache():
         cache.set('vectors_final', vectors, timeout=3600)  # Cache for 1 hour
     return vectors
 
+def get_tfidf_vectorizer_from_cache():
+    vectors = cache.get('tfidf_vectorizer')
+    if vectors is None:
+        tfidf_vectorizer_pickle_path = finders.find('src/tfidf_vectorizer.pkl')
+        vectors=pickle.load(open(tfidf_vectorizer_pickle_path,'rb'))
+        cache.set('tfidf_vectorizer', vectors, timeout=3600)  # Cache for 1 hour
+    return vectors
+
 
 
 
@@ -120,3 +130,14 @@ def get_vector_for_personalized_recommendation():
         cache.set('vector_for_personalized_recommendation', vectors, timeout=3600)  # Cache for 1 hour
     return vectors
 
+def preprocess_text(text):
+    # Lowercase the text
+    text = text.lower()
+    
+    # Remove punctuation
+    text = re.sub(r'[^\w\s]', '', text)  # Removes all non-alphanumeric characters except spaces
+    
+    # Apply stemming
+    text = ' '.join([stemmer.stem(word) for word in text.split()])
+    
+    return text
