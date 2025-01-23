@@ -32,7 +32,7 @@ const GameRecommendationForm = () => {
   };
 
   const handleSearchChange = (e) => {
-    const query = e.target.value;
+    const query = e.target.value; 
     setSearchQuery(query);
 
     // Clear the previous timeout if it exists
@@ -58,7 +58,7 @@ const GameRecommendationForm = () => {
     if (e.key === "Enter") {
       if (suggestions.length > 0) {
         // Set the first suggestion as the search query
-        setSearchQuery(suggestions[0]);
+        selectedMethod !=="description" && setSearchQuery(suggestions[0]);
         fetchRecommendations(suggestions[0], selectedMethod);
       } else {
         fetchRecommendations(searchQuery, selectedMethod);
@@ -72,7 +72,7 @@ const GameRecommendationForm = () => {
   };
 
   const handleSuggestionSelect = (suggestion) => {
-    setSearchQuery(suggestion); // Set the input field with the selected suggestion
+    selectedMethod !=="description" &&  setSearchQuery(suggestion); // Set the input field with the selected suggestion
     setSuggestions([]); // Clear the suggestions dropdown
   };
   return (
@@ -125,7 +125,7 @@ const GameRecommendationForm = () => {
           </button>
 
           {/* Suggestion Dropdown */}
-          {searchQuery && !loadingSuggestions && suggestions.length > 0 && (
+          {(selectedMethod !=="description") && (searchQuery && !loadingSuggestions && suggestions.length > 0 && (
             <ul className="absolute left-0 right-0 top-10 z-20 dark:text-gray-300 text-black bg-white border border-gray-300 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
               {suggestions.map((suggestion, index) => (
                 <li
@@ -137,14 +137,14 @@ const GameRecommendationForm = () => {
                 </li>
               ))}
             </ul>
-          )}
-          {loadingSuggestions && (
+          ))}
+          {(selectedMethod !=="description") && (loadingSuggestions && (
             <ul className="absolute left-0 right-0 top-10 z-20 dark:text-white text-black bg-white border border-gray-300 mt-1 rounded-md shadow-md max-h-60 overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
               <li className="px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600">
                 Loading...
               </li>
             </ul>
-          )}
+          ))}
         </div>
       )}
     </div>
