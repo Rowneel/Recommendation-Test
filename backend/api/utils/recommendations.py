@@ -30,6 +30,18 @@ def preprocess_title(file_path):
         games.at[i, 'clean_title'] = clean
     return games
 
+def preprocess_text(text):
+    # Lowercase the text
+    text = text.lower()
+    
+    # Remove punctuation
+    text = re.sub(r'[^\w\s]', '', text)  # Removes all non-alphanumeric characters except spaces
+    
+    # Apply stemming
+    text = ' '.join([stemmer.stem(word) for word in text.split()])
+    
+    return text
+
 
 def calculate_similarity(games):
     count = TfidfVectorizer(stop_words='english')
