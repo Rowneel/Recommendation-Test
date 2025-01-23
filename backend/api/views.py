@@ -162,7 +162,7 @@ def recommendation_by_description(request,game,n_recommendation = 20):
         # Retrieve recommended games
         game_lists = []
         for i in recommended_indices[1:n_recommendation]:
-            game_lists.append(games.iloc[i].title)
+            game_lists.append(games.iloc[i].app_id)
         return Response(game_lists)
 
     except Exception as e:
